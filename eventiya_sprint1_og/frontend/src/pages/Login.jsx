@@ -5,6 +5,7 @@ import { LogIn, ArrowLeft } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { motion } from 'framer-motion';
 import API_BASE_URL from '../apiConfig';
+import { mockDb } from '../services/mockDb';
 
 export default function Login() {
     const [email, setEmail] = useState('');
@@ -29,6 +30,19 @@ export default function Login() {
             login(response.data.token);
             navigate('/profile');
         } catch (err) {
+            // Fallback to Mock DB for demo purposes if backend is down
+            if (!err.response && !window.location.hostname.includes('localhost')) {
+                try {
+                    const mockResponse = await mockDb.login({ email, password });
+                    login(mockResponse.data.token);
+                    navigate('/profile');
+                    return;
+                } catch (mockErr) {
+                    setErrorMsg('Invalid credentials in Demo Mode.');
+                    return;
+                }
+            }
+
             if (err.response?.status === 401) {
                 setError('Invalid credentials. Please try again.');
             } else {

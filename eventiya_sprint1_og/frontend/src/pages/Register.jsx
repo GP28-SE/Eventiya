@@ -4,6 +4,7 @@ import axios from 'axios';
 import { UserPlus, ArrowLeft } from 'lucide-react';
 import { motion } from 'framer-motion';
 import API_BASE_URL from '../apiConfig';
+import { mockDb } from '../services/mockDb';
 
 export default function Register() {
     const [formData, setFormData] = useState({
@@ -38,6 +39,18 @@ export default function Register() {
             // Ensure smooth user experience - redirect to login on success
             navigate('/login', { state: { message: 'Registration successful! Please sign in.' } });
         } catch (err) {
+            // Fallback to Mock DB for demo purposes if backend is down
+            if (!err.response && !window.location.hostname.includes('localhost')) {
+                try {
+                    await mockDb.register(formData);
+                    navigate('/login', { state: { message: 'Signed up successfully (Demo Mode)! Please sign in.' } });
+                    return;
+                } catch (mockErr) {
+                    setErrorMsg(mockErr.response.data.message);
+                    return;
+                }
+            }
+
             if (err.response) {
                 if (err.response.status === 409) {
                     setErrorMsg('An account with this email already exists.');
