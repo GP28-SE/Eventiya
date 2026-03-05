@@ -1,7 +1,5 @@
 package com.eventiya.backend.controller;
 
-import com.eventiya.backend.dto.ProfileResponse;
-import com.eventiya.backend.dto.ProfileUpdateRequest;
 import com.eventiya.backend.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;

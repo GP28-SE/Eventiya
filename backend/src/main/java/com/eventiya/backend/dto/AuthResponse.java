@@ -1,7 +1,5 @@
 package com.eventiya.backend.dto;
 
-import com.eventiya.backend.entity.Role;
-
 import java.util.Date;
 
 public class AuthResponse {

@@ -3,7 +3,6 @@ package com.eventiya.backend.service;
 import com.eventiya.backend.dto.AuthResponse;
 import com.eventiya.backend.dto.LoginRequest;
 import com.eventiya.backend.dto.RegisterRequest;
-import com.eventiya.backend.entity.Role;
 import com.eventiya.backend.entity.User;
 import com.eventiya.backend.exception.EmailAlreadyExistsException;
 import com.eventiya.backend.repository.UserRepository;

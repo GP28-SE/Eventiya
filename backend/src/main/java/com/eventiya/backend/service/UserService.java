@@ -1,7 +1,5 @@
 package com.eventiya.backend.service;
 
-import com.eventiya.backend.dto.ProfileResponse;
-import com.eventiya.backend.dto.ProfileUpdateRequest;
 import com.eventiya.backend.entity.User;
 import com.eventiya.backend.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
