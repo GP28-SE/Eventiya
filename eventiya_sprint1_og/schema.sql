@@ -1,6 +1,6 @@
 -- Create database
-CREATE DATABASE IF NOT EXISTS eventiya;
-USE eventiya;
+CREATE DATABASE IF NOT EXISTS eventiya_db;
+USE eventiya_db;
 
 -- Create Users table
 CREATE TABLE IF NOT EXISTS users (
