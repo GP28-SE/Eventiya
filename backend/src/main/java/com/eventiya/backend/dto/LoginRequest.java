@@ -2,7 +2,7 @@ package com.eventiya.backend.dto;
 
 import jakarta.validation.constraints.NotBlank;
 
-//public class LoginRequest {
+public class LoginRequest {
 
     @NotBlank(message = "Email is required")
     private String email;
@@ -25,4 +25,4 @@ import jakarta.validation.constraints.NotBlank;
     public void setPassword(String password) {
         this.password = password;
     }
-
+}

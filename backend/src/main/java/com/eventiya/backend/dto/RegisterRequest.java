@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
-//public class RegisterRequest {
+public class RegisterRequest {
 
     @NotBlank(message = "Name is required")
     @Size(min = 2, message = "Name must be at least 2 characters")
