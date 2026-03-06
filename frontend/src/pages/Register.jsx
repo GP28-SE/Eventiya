@@ -57,7 +57,7 @@ export default function Register() {
     return (
         <div className="flex-grow flex min-h-screen">
             {/* Left Decorative Panel */}
-            <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-brand-900 border-r border-white/5">
+            <div className="mt-16 hidden lg:flex lg:w-1/2 relative overflow-hidden bg-brand-900 border-r border-white/5">
                 <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-[#0a0f1c] to-transparent z-10"></div>
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-accent-500/20 rounded-full blur-[150px] -z-10 animate-pulse-slow" style={{ animationDelay: '1s' }}></div>
 
@@ -91,7 +91,7 @@ export default function Register() {
             </div>
 
             {/* Right Form Panel */}
-            <div className="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-12 relative overflow-y-auto">
+            <div className="mt-16 w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-12 relative overflow-y-auto">
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-brand-500/5 rounded-full blur-[150px] -z-10 lg:hidden"></div>
 
                 <motion.div
