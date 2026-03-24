@@ -3,6 +3,7 @@ import axios from 'axios';
 import { User, Mail, Phone, Save, AlertCircle, CheckCircle, Shield, Activity, CalendarDays } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { motion } from 'framer-motion';
+import API_BASE_URL from '../api/apiConfig';
 
 export default function Profile() {
     const { user } = useAuth();
@@ -14,7 +15,7 @@ export default function Profile() {
     useEffect(() => {
         const loadProfile = async () => {
             try {
-                const res = await axios.get('http://localhost:8080/api/users/profile');
+                const res = await axios.get(`${API_BASE_URL}/api/users/profile`);
                 setProfile({
                     name: res.data.name || '',
                     contact: res.data.contact || ''
@@ -39,7 +40,7 @@ export default function Profile() {
         setStatus(null);
 
         try {
-            await axios.put('http://localhost:8080/api/users/profile', profile);
+            await axios.put(`${API_BASE_URL}/api/users/profile`, profile);
             setStatus({ type: 'success', msg: 'Profile updated successfully!' });
         } catch (err) {
             setStatus({ type: 'error', msg: err.response?.data?.message || 'Failed to update profile.' });

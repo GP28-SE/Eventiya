@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Mail, CheckCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import API_BASE_URL from '../api/apiConfig';
 
 export default function ForgotPassword() {
     const [email, setEmail] = useState('');
@@ -16,7 +17,7 @@ export default function ForgotPassword() {
 
         try {
             // TODO: wire up to backend endpoint when available
-            // await axios.post('http://localhost:8080/api/auth/forgot-password', { email });
+            // await axios.post(`${API_BASE_URL}/api/auth/forgot-password`, { email });
             await new Promise((res) => setTimeout(res, 800)); // simulate network
             setSubmitted(true);
         } catch (err) {

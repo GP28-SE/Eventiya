@@ -4,6 +4,7 @@ import axios from 'axios';
 import { UserPlus, ArrowLeft } from 'lucide-react';
 import { motion } from 'framer-motion';
 import registerBg from '../assets/register-bg.jpg';
+import API_BASE_URL from '../api/apiConfig';
 
 export default function Register() {
     const [formData, setFormData] = useState({
@@ -34,7 +35,7 @@ export default function Register() {
         setLoading(true);
 
         try {
-            await axios.post('http://localhost:8080/api/auth/register', formData);
+            await axios.post(`${API_BASE_URL}/api/auth/register`, formData);
             // Ensure smooth user experience - redirect to login on success
             navigate('/login', { state: { message: 'Registration successful! Please sign in.' } });
         } catch (err) {

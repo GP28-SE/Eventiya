@@ -2,6 +2,7 @@ import { useState } from 'react';
 import axios from 'axios';
 import { Calendar, Plus, ShieldAlert, Activity, Search, Filter, MoreVertical, Edit2, Trash2 } from 'lucide-react';
 import { motion } from 'framer-motion';
+import API_BASE_URL from '../api/apiConfig';
 
 export default function ManageEvents() {
     const [testResult, setTestResult] = useState(null);
@@ -12,7 +13,7 @@ export default function ManageEvents() {
         setLoading(true);
         setTestResult(null);
         try {
-            const res = await axios.post('http://localhost:8080/api/events', {
+            const res = await axios.post(`${API_BASE_URL}/api/events`, {
                 title: "Sample Event",
                 description: "Testing Authorization"
             });

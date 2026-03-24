@@ -10,6 +10,7 @@ import com.eventiya.backend.repository.UserRepository;
 import com.eventiya.backend.security.JwtUtils;
 import com.eventiya.backend.security.UserDetailsImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -34,6 +35,9 @@ public class AuthService {
 
     @Autowired
     private JwtUtils jwtUtils;
+
+    @Value("${jwt.expiration-ms}")
+    private Long jwtExpirationMs;
 
     @Transactional
     public void register(RegisterRequest request) {
@@ -63,7 +67,7 @@ public class AuthService {
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
 
         // Calculate expiration derived from token creation config
-        Date expiresAt = new Date(System.currentTimeMillis() + 86400000); // 24 hours
+        Date expiresAt = new Date(System.currentTimeMillis() + jwtExpirationMs);
 
         return new AuthResponse(
                 jwt,
