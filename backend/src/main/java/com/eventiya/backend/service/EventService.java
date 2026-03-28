@@ -7,11 +7,10 @@ import com.eventiya.backend.repository.EventRepository;
 import com.eventiya.backend.repository.UserRepository;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import java.util.List;
+import java.time.LocalDateTime;
 
-/*
- * Service class handling the business logic for Event management.
- * Ensures data integrity and handles relationship mapping between Event and Organizer.
- */
+
 @Service
 public class EventService {
 
@@ -23,10 +22,6 @@ public class EventService {
         this.userRepository = userRepository;
     }
 
-    /*
-     * Creates a new event and assigns the currently logged-in user as the organizer.
-     * Sets the default status to 'DRAFT' as per the Definition of Done.
-     */
     public Event createEvent(EventRequest request, String email) {
         User organizer = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
@@ -46,5 +41,21 @@ public class EventService {
         event.setStatus("DRAFT");
 
         return eventRepository.save(event);
+    }
+
+    public List<Event> searchEventsByTitle(String title) {
+        return eventRepository.findByTitleContainingIgnoreCase(title);
+    }
+
+    public List<Event> filterEventsByCategory(String category) {
+        return eventRepository.findByCategoryIgnoreCase(category);
+    }
+
+    public List<Event> getAllEvents() {
+        return eventRepository.findAll();
+    }
+
+    public List<Event> filterEventsByDateRange(LocalDateTime start, LocalDateTime end) {
+        return eventRepository.findByEventDateBetween(start, end);
     }
 }

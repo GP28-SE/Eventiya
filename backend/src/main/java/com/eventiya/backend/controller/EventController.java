@@ -9,11 +9,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import java.util.List;
 
-/*
- * REST Controller for managing Event-related operations.
- * Provides endpoints for creating and managing events with role-based access control.
- */
+
 @RestController
 @RequestMapping("/api/events")
 public class EventController {
@@ -24,13 +22,6 @@ public class EventController {
         this.eventService = eventService;
     }
 
-    /*
-     * Endpoint for creating a new event.
-     * Restricted to users with the 'ORGANIZER' role.
-     * * @param request The event details validated via EventRequest DTO.
-     * @param authentication The security context containing the logged-in user's details.
-     * @return The created Event entity with a 201 Created status.
-     */
     @PostMapping
     @PreAuthorize("hasRole('ORGANIZER')")
     public ResponseEntity<Event> createEvent(@Valid @RequestBody EventRequest request, Authentication authentication) {
@@ -38,5 +29,33 @@ public class EventController {
         Event createdEvent = eventService.createEvent(request, authentication.getName());
 
         return new ResponseEntity<>(createdEvent, HttpStatus.CREATED);
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<Event>> searchEvents(
+            @RequestParam(required = false) String title,
+            @RequestParam(required = false) String category,
+            @RequestParam(required = false) @org.springframework.format.annotation.DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE_TIME) java.time.LocalDateTime startDate,
+            @RequestParam(required = false) @org.springframework.format.annotation.DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE_TIME) java.time.LocalDateTime endDate) {
+
+        List<Event> events;
+
+        if (startDate != null && endDate != null) {
+            events = eventService.filterEventsByDateRange(startDate, endDate);
+        }
+
+        else if (title != null && !title.isEmpty()) {
+            events = eventService.searchEventsByTitle(title);
+        }
+
+        else if (category != null && !category.isEmpty()) {
+            events = eventService.filterEventsByCategory(category);
+        }
+
+        else {
+            events = eventService.getAllEvents();
+        }
+
+        return ResponseEntity.ok(events);
     }
 }
