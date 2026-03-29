@@ -20,6 +20,7 @@ public class Event {
 
     // Initial status for all new events is set to 'DRAFT'
     private String status;
+    private String imageUrl;
 
     @ManyToOne
     @JoinColumn(name = "organizer_id")
@@ -55,4 +56,12 @@ public class Event {
 
     public User getOrganizer() { return organizer; }
     public void setOrganizer(User organizer) { this.organizer = organizer; }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
 }

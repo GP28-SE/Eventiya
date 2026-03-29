@@ -3,12 +3,16 @@ package com.eventiya.backend.controller;
 import com.eventiya.backend.dto.EventRequest;
 import com.eventiya.backend.entity.Event;
 import com.eventiya.backend.service.EventService;
+import com.eventiya.backend.service.FileStorageService;
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
 import java.util.List;
 
 
@@ -57,5 +61,22 @@ public class EventController {
         }
 
         return ResponseEntity.ok(events);
+    }
+
+    @Autowired
+    private FileStorageService fileStorageService;
+
+    @PostMapping("/{id}/image")
+    public ResponseEntity<String> uploadImage(@PathVariable Long id, @RequestParam("file") MultipartFile file) {
+        try {
+
+            String fileName = fileStorageService.saveImage(file);
+
+            eventService.updateEventImage(id, fileName);
+
+            return ResponseEntity.ok("Image uploaded successfully: " + fileName);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
 }

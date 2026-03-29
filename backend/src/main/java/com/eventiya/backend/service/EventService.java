@@ -58,4 +58,14 @@ public class EventService {
     public List<Event> filterEventsByDateRange(LocalDateTime start, LocalDateTime end) {
         return eventRepository.findByEventDateBetween(start, end);
     }
+
+    public void updateEventImage(Long id, String imageUrl) {
+
+        Event event = eventRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Event not found with id: " + id));
+
+        event.setImageUrl(imageUrl);
+
+        eventRepository.save(event);
+    }
 }
