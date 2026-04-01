@@ -251,7 +251,7 @@ const Home = () => {
                         </p>
 
                         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                            <Link to="/register" className="w-full sm:w-auto">
+                            <Link to="/events" className="w-full sm:w-auto">
                                 <button className="btn-primary flex items-center justify-center gap-2 group px-8 py-4 text-base">
                                     Start Exploring
                                     <ArrowRight className="group-hover:translate-x-1 transition-transform" size={20} />

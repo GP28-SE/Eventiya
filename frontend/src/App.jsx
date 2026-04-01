@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import Navbar from './components/Navbar';
 import Home from './pages/Home';
+import Events from './pages/Events';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import ForgotPassword from './pages/ForgotPassword';
@@ -41,6 +42,7 @@ function AppRoutes() {
             <main className="flex-grow flex flex-col z-10">
                 <Routes>
                     <Route path="/" element={<Home />} />
+                    <Route path="/events" element={<Events />} />
                     <Route path="/login" element={<PublicOnlyRoute><Login /></PublicOnlyRoute>} />
                     <Route path="/register" element={<PublicOnlyRoute><Register /></PublicOnlyRoute>} />
                     <Route path="/forgot-password" element={<PublicOnlyRoute><ForgotPassword /></PublicOnlyRoute>} />
