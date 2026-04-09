@@ -13,6 +13,8 @@ public class EventDTO {
     private BigDecimal price;
     private EventStatus status;
     private String imageUrl;
+    private Long organizerId;
+    private String organizerName;
 
     // Constructors, Getters and Setters
 
@@ -80,5 +82,21 @@ public class EventDTO {
 
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
+    }
+
+    public Long getOrganizerId() {
+        return organizerId;
+    }
+
+    public void setOrganizerId(Long organizerId) {
+        this.organizerId = organizerId;
+    }
+
+    public String getOrganizerName() {
+        return organizerName;
+    }
+
+    public void setOrganizerName(String organizerName) {
+        this.organizerName = organizerName;
     }
 }

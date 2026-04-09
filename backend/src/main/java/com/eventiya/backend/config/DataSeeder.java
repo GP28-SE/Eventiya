@@ -17,6 +17,9 @@ public class DataSeeder implements CommandLineRunner {
     @Autowired
     private EventRepository eventRepository;
 
+    @Autowired
+    private com.eventiya.backend.repository.UserRepository userRepository;
+
     @Override
     public void run(String... args) throws Exception {
         if (eventRepository.count() == 0) {
@@ -27,8 +30,19 @@ public class DataSeeder implements CommandLineRunner {
     private void seedEvents() {
         LocalDateTime now = LocalDateTime.now();
 
+        // Ensure at least one organizer exists
+        com.eventiya.backend.entity.User organizer = userRepository.findByEmail("organizer@eventiya.com").orElseGet(() -> {
+            com.eventiya.backend.entity.User newUser = new com.eventiya.backend.entity.User();
+            newUser.setName("Default Organizer");
+            newUser.setEmail("organizer@eventiya.com");
+            newUser.setPasswordHash("$2a$10$8.UnVuG9HHgffUDAlk8Kn.2NvEnJZyT.q6b4.E3QkPjiD.M.7ZSu."); // password: password
+            newUser.setRole(com.eventiya.backend.entity.Role.ROLE_ORGANIZER);
+            return userRepository.save(newUser);
+        });
+
         Event event1 = new Event();
         event1.setTitle("Tech Innovators Conference 2026");
+        event1.setOrganizer(organizer);
         event1.setDescription("Join the brightest minds in tech for a two-day conference on AI, cloud computing, and the future of work.");
         event1.setEventDate(now.plusDays(10).withHour(9).withMinute(0));
         event1.setVenue("Silicon Valley Convention Center");
@@ -38,6 +52,7 @@ public class DataSeeder implements CommandLineRunner {
 
         Event event2 = new Event();
         event2.setTitle("Underground Jazz Night");
+        event2.setOrganizer(organizer);
         event2.setDescription("An intimate evening of smooth jazz and soul in the heart of the city. Featuring local legends and rising stars.");
         event2.setEventDate(now.plusDays(5).withHour(20).withMinute(30));
         event2.setVenue("The Blue Note Lounge");
@@ -47,6 +62,7 @@ public class DataSeeder implements CommandLineRunner {
 
         Event event3 = new Event();
         event3.setTitle("Modern Art Exhibition");
+        event3.setOrganizer(organizer);
         event3.setDescription("Explore contemporary masterpieces and experimental installations from upcoming artists in our special spring showcase.");
         event3.setEventDate(now.plusDays(15).withHour(10).withMinute(0));
         event3.setVenue("Metropolitan Gallery of Art");
@@ -56,6 +72,7 @@ public class DataSeeder implements CommandLineRunner {
 
         Event event4 = new Event();
         event4.setTitle("Global Food Festival");
+        event4.setOrganizer(organizer);
         event4.setDescription("Taste flavors from around the world! Over 50 vendors serving authentic dishes, plus live cooking demonstrations.");
         event4.setEventDate(now.plusDays(20).withHour(11).withMinute(0));
         event4.setVenue("City Central Park");
@@ -65,6 +82,7 @@ public class DataSeeder implements CommandLineRunner {
 
         Event event5 = new Event();
         event5.setTitle("Startup Pitch Night");
+        event5.setOrganizer(organizer);
         event5.setDescription("Watch the next generation of entrepreneurs pitch their ideas to a panel of expert investors and industry leaders.");
         event5.setEventDate(now.plusDays(2).withHour(18).withMinute(0));
         event5.setVenue("Innovation Hub Co-working");
@@ -74,6 +92,7 @@ public class DataSeeder implements CommandLineRunner {
 
         Event event6 = new Event();
         event6.setTitle("Wellness & Yoga Retreat");
+        event6.setOrganizer(organizer);
         event6.setDescription("Rejuvenate your body and mind with our weekend retreat featuring yoga sessions, meditation, and healthy organic meals.");
         event6.setEventDate(now.plusDays(30).withHour(8).withMinute(0));
         event6.setVenue("Serenity Lake Resort");

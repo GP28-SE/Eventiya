@@ -38,6 +38,10 @@ public class Event {
 
     private LocalDateTime updatedAt;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "organizer_id", nullable = false)
+    private User organizer;
+
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
@@ -129,5 +133,13 @@ public class Event {
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public User getOrganizer() {
+        return organizer;
+    }
+
+    public void setOrganizer(User organizer) {
+        this.organizer = organizer;
     }
 }

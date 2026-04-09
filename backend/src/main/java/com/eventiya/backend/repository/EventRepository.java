@@ -12,4 +12,5 @@ import java.time.LocalDateTime;
 @Repository
 public interface EventRepository extends JpaRepository<Event, Long> {
     Page<Event> findByStatusAndEventDateAfterOrderByEventDateAsc(EventStatus status, LocalDateTime eventDate, Pageable pageable);
+    Page<Event> findByOrganizerId(Long organizerId, Pageable pageable);
 }
