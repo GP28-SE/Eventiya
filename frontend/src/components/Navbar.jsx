@@ -40,6 +40,12 @@ export default function Navbar() {
 
                     {/* Navigation Links */}
                     <div className="hidden md:flex items-center space-x-2">
+                        <Link
+                            to="/events"
+                            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 ${isActive('/events') ? 'bg-white/10 text-white shadow-inner border border-white/5' : 'text-slate-400 hover:text-white hover:bg-white/5'}`}
+                        >
+                            <Calendar className="w-4 h-4" /> Browse Events
+                        </Link>
                         {isAuthenticated ? (
                             <>
                                 <Link
