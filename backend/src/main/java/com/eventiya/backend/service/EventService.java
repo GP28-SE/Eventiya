@@ -25,6 +25,12 @@ public class EventService {
         return events.map(this::convertToDTO);
     }
 
+    public EventDTO getEventById(Long id) {
+        Event event = eventRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Event not found with id: " + id));
+        return convertToDTO(event);
+    }
+
     private EventDTO convertToDTO(Event event) {
         EventDTO dto = new EventDTO();
         dto.setId(event.getId());

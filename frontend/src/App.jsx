@@ -8,6 +8,7 @@ import Register from './pages/Register';
 import ForgotPassword from './pages/ForgotPassword';
 import Profile from './pages/Profile';
 import ManageEvents from './pages/ManageEvents';
+import EventDetail from './pages/EventDetail';
 
 // Protected Route Wrapper
 const ProtectedRoute = ({ children, requireOrganizer = false }) => {
@@ -43,6 +44,7 @@ function AppRoutes() {
                 <Routes>
                     <Route path="/" element={<Home />} />
                     <Route path="/events" element={<Events />} />
+                    <Route path="/events/:id" element={<EventDetail />} />
                     <Route path="/login" element={<PublicOnlyRoute><Login /></PublicOnlyRoute>} />
                     <Route path="/register" element={<PublicOnlyRoute><Register /></PublicOnlyRoute>} />
                     <Route path="/forgot-password" element={<PublicOnlyRoute><ForgotPassword /></PublicOnlyRoute>} />
