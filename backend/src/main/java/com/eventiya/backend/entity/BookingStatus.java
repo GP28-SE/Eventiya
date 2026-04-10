@@ -6,4 +6,8 @@ public enum BookingStatus {
     PAID,                   // Admin approved (QR code generated)
     CANCELLED,              // Timeout or manual cancellation
     USED                    // Ticket scanned at venue
+    PENDING,
+    PENDING_VERIFICATION,
+    CONFIRMED,
+    CANCELLED
 }

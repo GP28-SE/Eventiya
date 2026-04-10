@@ -25,6 +25,12 @@ public class Booking {
 
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal totalPrice;
+    @JoinColumn(name = "event_id")
+    private Event event;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -39,6 +45,13 @@ public class Booking {
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;
+    @Column(name = "receipt_url")
+    private String receiptUrl;
+
+    @Column(name = "created_at", updatable = false)
+    private LocalDateTime createdAt;
+
+    public Booking() {}
 
     @PrePersist
     protected void onCreate() {
@@ -52,6 +65,11 @@ public class Booking {
     }
 
     // Getters and Setters
+
+        if (this.status == null) {
+            this.status = BookingStatus.PENDING;
+        }
+    }
 
     public Long getId() {
         return id;
@@ -91,6 +109,12 @@ public class Booking {
 
     public void setTotalPrice(BigDecimal totalPrice) {
         this.totalPrice = totalPrice;
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public BookingStatus getStatus() {
