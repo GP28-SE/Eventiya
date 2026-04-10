@@ -1,6 +1,7 @@
 package com.eventiya.backend.entity;
 
 import jakarta.persistence.*;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -12,6 +13,18 @@ public class Booking {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User attendee;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "event_id", nullable = false)
+    private Event event;
+
+    @Column(nullable = false)
+    private Integer ticketCount;
+
+    @Column(nullable = false, precision = 10, scale = 2)
+    private BigDecimal totalPrice;
     @JoinColumn(name = "event_id")
     private Event event;
 
@@ -23,6 +36,15 @@ public class Booking {
     @Column(nullable = false)
     private BookingStatus status;
 
+    @Column(unique = true)
+    private String referenceCode;
+
+    private String receiptUrl;
+
+    @Column(updatable = false)
+    private LocalDateTime createdAt;
+
+    private LocalDateTime updatedAt;
     @Column(name = "receipt_url")
     private String receiptUrl;
 
@@ -34,6 +56,16 @@ public class Booking {
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    // Getters and Setters
+
         if (this.status == null) {
             this.status = BookingStatus.PENDING;
         }
@@ -47,6 +79,14 @@ public class Booking {
         this.id = id;
     }
 
+    public User getAttendee() {
+        return attendee;
+    }
+
+    public void setAttendee(User attendee) {
+        this.attendee = attendee;
+    }
+
     public Event getEvent() {
         return event;
     }
@@ -55,6 +95,20 @@ public class Booking {
         this.event = event;
     }
 
+    public Integer getTicketCount() {
+        return ticketCount;
+    }
+
+    public void setTicketCount(Integer ticketCount) {
+        this.ticketCount = ticketCount;
+    }
+
+    public BigDecimal getTotalPrice() {
+        return totalPrice;
+    }
+
+    public void setTotalPrice(BigDecimal totalPrice) {
+        this.totalPrice = totalPrice;
     public User getUser() {
         return user;
     }
@@ -71,6 +125,14 @@ public class Booking {
         this.status = status;
     }
 
+    public String getReferenceCode() {
+        return referenceCode;
+    }
+
+    public void setReferenceCode(String referenceCode) {
+        this.referenceCode = referenceCode;
+    }
+
     public String getReceiptUrl() {
         return receiptUrl;
     }
@@ -85,5 +147,13 @@ public class Booking {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 }

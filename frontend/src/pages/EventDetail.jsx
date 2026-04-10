@@ -1,15 +1,56 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import eventService from '../api/eventService';
-import { FaCalendarAlt, FaMapMarkerAlt, FaTicketAlt, FaInfoCircle, FaEnvelope } from 'react-icons/fa';
+import { Calendar, MapPin, Ticket, Info, Mail, Plus, Minus, CheckCircle2 as CheckCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import bookingService from '../api/bookingService';
+import { useAuth } from '../context/AuthContext';
 
 const EventDetail = () => {
     const { id } = useParams();
     const navigate = useNavigate();
+    const { isAuthenticated } = useAuth();
+    
     const [event, setEvent] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [ticketCount, setTicketCount] = useState(1);
+    const [isBooking, setIsBooking] = useState(false);
+    const [bookingSuccess, setBookingSuccess] = useState(null);
+
+    const handleIncrement = () => {
+        if (ticketCount < 10 && ticketCount < (event?.availableTickets || 0)) {
+            setTicketCount(prev => prev + 1);
+        }
+    };
+
+    const handleDecrement = () => {
+        if (ticketCount > 1) {
+            setTicketCount(prev => prev - 1);
+        }
+    };
+
+    const handleBooking = async () => {
+        if (!isAuthenticated) {
+            navigate('/login', { state: { from: `/events/${id}` } });
+            return;
+        }
+
+        try {
+            setIsBooking(true);
+            const booking = await bookingService.createBooking(id, ticketCount);
+            setBookingSuccess(booking);
+            // After successful booking, redirect to payment/receipt upload page
+            setTimeout(() => {
+                navigate(`/dashboard/tickets`); // Or a specific payment page
+            }, 2000);
+        } catch (err) {
+            console.error('Booking failed:', err);
+            alert('Failed to reserve tickets. Please try again.');
+        } finally {
+            setIsBooking(false);
+        }
+    };
 
     useEffect(() => {
         const fetchEvent = async () => {
@@ -58,7 +99,7 @@ const EventDetail = () => {
         return (
             <div className="min-h-[60vh] flex flex-col items-center justify-center text-center px-4">
                 <div className="bg-red-500/10 p-4 rounded-full mb-4">
-                    <FaInfoCircle className="text-red-500 text-4xl" />
+                    <Info className="text-red-500 text-4xl" />
                 </div>
                 <h2 className="text-2xl font-bold text-white mb-2">{error}</h2>
                 <button 
@@ -134,7 +175,7 @@ const EventDetail = () => {
                     >
                         <div className="glass-card p-8 md:p-10">
                             <h2 className="text-2xl font-bold text-white mb-6 flex items-center">
-                                <FaInfoCircle className="mr-3 text-brand-500" />
+                                <Info className="mr-3 text-brand-500" />
                                 About this Event
                             </h2>
                             <div className="prose prose-invert max-w-none text-slate-300 leading-relaxed text-lg">
@@ -145,13 +186,13 @@ const EventDetail = () => {
                         {/* Venue Section */}
                         <div className="glass-card p-8">
                             <h2 className="text-2xl font-bold text-white mb-6 flex items-center">
-                                <FaMapMarkerAlt className="mr-3 text-brand-500" />
+                                <MapPin className="mr-3 text-brand-500" />
                                 Venue Details
                             </h2>
                             <div className="flex flex-col md:flex-row gap-8 items-center">
                                 <div className="w-full h-48 bg-slate-800/50 rounded-2xl flex items-center justify-center border border-white/5 relative overflow-hidden group">
                                     <div className="absolute inset-0 bg-brand-500/5 group-hover:bg-brand-500/10 transition-colors"></div>
-                                    <FaMapMarkerAlt className="text-4xl text-slate-600 animate-bounce" />
+                                    <MapPin className="text-4xl text-slate-600 animate-bounce" />
                                     <p className="absolute bottom-4 text-sm text-slate-500 font-medium">Interactive map coming soon</p>
                                 </div>
                                 <div className="flex-1 space-y-2">
@@ -170,20 +211,102 @@ const EventDetail = () => {
                         className="lg:col-span-1"
                     >
                         <div className="sticky top-8 space-y-6">
+                            {/* Booking Card */}
                             <div className="glass-card p-8 border-brand-500/20">
-                                <h3 className="text-xl font-bold text-white mb-8 pb-4 border-b border-white/5">Event Summary</h3>
+                                <h3 className="text-xl font-bold text-white mb-8 pb-4 border-b border-white/5">Book Tickets</h3>
                                 
-                                <div className="space-y-6 mb-10">
+                                <div className="space-y-4 mb-8">
+                                    <div className="flex items-center justify-between p-4 bg-white/5 rounded-2xl border border-white/5">
+                                        <div className="flex flex-col">
+                                            <span className="text-sm text-slate-500 uppercase font-bold tracking-tight">Quantity</span>
+                                            <span className="text-xs text-brand-400 font-medium">Max 10 per user</span>
+                                        </div>
+                                        <div className="flex items-center gap-4 bg-[#0a0f1c] p-1 rounded-xl border border-white/10">
+                                            <button 
+                                                onClick={handleDecrement}
+                                                disabled={ticketCount <= 1}
+                                                className="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-white/5 text-slate-400 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                                            >
+                                                <Minus className="w-3 h-3" />
+                                            </button>
+                                            <span className="text-xl font-bold text-white min-w-[2ch] text-center">{ticketCount}</span>
+                                            <button 
+                                                onClick={handleIncrement}
+                                                disabled={ticketCount >= 10 || ticketCount >= (event?.availableTickets || 0)}
+                                                className="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-white/5 text-slate-400 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                                            >
+                                                <Plus className="w-3 h-3" />
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex items-center justify-between px-2">
+                                        <span className="text-slate-400 font-medium">Availability</span>
+                                        <span className={`text-sm font-bold ${event?.availableTickets < 10 ? 'text-amber-400' : 'text-brand-400'}`}>
+                                            {event?.availableTickets || 0} left
+                                        </span>
+                                    </div>
+                                    
+                                    <div className="flex items-center justify-between px-2 pt-2 border-t border-white/5">
+                                        <span className="text-slate-400 font-medium text-lg">Total Price</span>
+                                        <span className="text-2xl font-bold text-white text-glow">
+                                            {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format((event?.price || 0) * ticketCount)}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <AnimatePresence mode="wait">
+                                    {bookingSuccess ? (
+                                        <motion.div 
+                                            initial={{ scale: 0.9, opacity: 0 }}
+                                            animate={{ scale: 1, opacity: 1 }}
+                                            className="bg-brand-500/20 border border-brand-500/30 p-4 rounded-xl flex items-center gap-3 text-brand-400"
+                                        >
+                                            <CheckCircle className="w-6 h-6 shrink-0" />
+                                            <div>
+                                                <p className="font-bold text-sm">Tickets Reserved!</p>
+                                                <p className="text-xs">Redirecting to your ticket wallet...</p>
+                                            </div>
+                                        </motion.div>
+                                    ) : (
+                                        <button 
+                                            onClick={handleBooking}
+                                            disabled={isBooking || (event?.availableTickets || 0) <= 0}
+                                            className="btn-primary flex items-center justify-center group shadow-lg shadow-brand-500/20 relative overflow-hidden h-14 disabled:opacity-50 disabled:grayscale transition-all"
+                                        >
+                                            {isBooking ? (
+                                                <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                                            ) : (
+                                                <>
+                                                    <span className="absolute inset-0 bg-white/10 translate-y-14 group-hover:translate-y-0 transition-transform duration-300"></span>
+                                                    <Ticket className="mr-3 group-hover:rotate-12 transition-transform relative z-10" />
+                                                    <span className="relative z-10 font-bold tracking-wide">
+                                                        {(event?.availableTickets || 0) > 0 ? 'Book Ticket Now' : 'Sold Out'}
+                                                    </span>
+                                                </>
+                                            )}
+                                        </button>
+                                    )}
+                                </AnimatePresence>
+
+                                <p className="text-center text-slate-500 text-[10px] mt-4 uppercase tracking-widest font-bold opacity-60">
+                                    Secured by Eventiya Payments
+                                </p>
+                            </div>
+
+                            {/* Event Info Card */}
+                            <div className="glass-card p-8">
+                                <h3 className="text-lg font-bold text-white mb-6">Event Details</h3>
+                                <div className="space-y-6">
                                     <div className="flex items-start group">
-                                        <div className="p-3 bg-brand-500/10 rounded-xl mr-4 group-hover:bg-brand-500/20 transition-colors">
-                                            <FaCalendarAlt className="text-brand-500 text-xl" />
+                                        <div className="p-3 bg-brand-500/10 rounded-xl mr-4">
+                                            <Calendar className="text-brand-500 text-xl" />
                                         </div>
                                         <div>
-                                            <p className="text-sm text-slate-500 uppercase tracking-wider font-semibold mb-1">Date & Time</p>
-                                            <p className="text-lg text-slate-200">
-                                                {event.eventDate ? new Date(event.eventDate).toLocaleDateString('en-US', {
-                                                    weekday: 'long',
-                                                    year: 'numeric',
+                                            <p className="text-xs text-slate-500 uppercase tracking-wider font-bold mb-1">Date & Time</p>
+                                            <p className="text-sm text-slate-200">
+                                                {event?.eventDate ? new Date(event.eventDate).toLocaleDateString('en-US', {
+                                                    weekday: 'short',
                                                     month: 'long',
                                                     day: 'numeric',
                                                     hour: '2-digit',
@@ -194,50 +317,38 @@ const EventDetail = () => {
                                     </div>
 
                                     <div className="flex items-start group">
-                                        <div className="p-3 bg-brand-500/10 rounded-xl mr-4 group-hover:bg-brand-500/20 transition-colors">
-                                            <FaMapMarkerAlt className="text-brand-400 text-xl" />
+                                        <div className="p-3 bg-brand-500/10 rounded-xl mr-4">
+                                            <MapPin className="text-brand-500 text-xl" />
                                         </div>
                                         <div>
-                                            <p className="text-sm text-slate-500 uppercase tracking-wider font-semibold mb-1">Location</p>
-                                            <p className="text-lg text-slate-200">{event.venue || 'Venue TBA'}</p>
+                                            <p className="text-xs text-slate-500 uppercase tracking-wider font-bold mb-1">Location</p>
+                                            <p className="text-sm text-slate-200">{event?.venue || 'Venue TBA'}</p>
                                         </div>
                                     </div>
 
                                     <div className="flex items-start group">
-                                        <div className="p-3 bg-brand-500/10 rounded-xl mr-4 group-hover:bg-brand-500/20 transition-colors">
-                                            <FaEnvelope className="text-brand-500 text-xl" />
+                                        <div className="p-3 bg-brand-500/10 rounded-xl mr-4">
+                                            <Mail className="text-brand-500 text-xl" />
                                         </div>
                                         <div>
-                                            <p className="text-sm text-slate-500 uppercase tracking-wider font-semibold mb-1">Organizer Contact</p>
-                                            <p className="text-lg text-slate-200">support@eventiya.com</p>
+                                            <p className="text-xs text-slate-500 uppercase tracking-wider font-bold mb-1">Organizer Contact</p>
+                                            <p className="text-sm text-slate-200">support@eventiya.com</p>
                                         </div>
                                     </div>
                                 </div>
-
-                                <button className="btn-primary flex items-center justify-center group shadow-lg shadow-brand-500/20 relative overflow-hidden">
-                                    <span className="absolute inset-0 bg-white/10 translate-y-12 group-hover:translate-y-0 transition-transform duration-300"></span>
-                                    <FaTicketAlt className="mr-3 group-hover:rotate-12 transition-transform relative z-10" />
-                                    <span className="relative z-10">Book Ticket Now</span>
-                                </button>
-                                <p className="text-center text-slate-500 text-sm mt-4">
-                                    Secured by Eventiya Payments
-                                </p>
                             </div>
 
                             {/* Organizer Spotlight */}
                             <div className="glass p-6 rounded-2xl border border-white/5">
                                 <div className="flex items-center mb-4">
                                     <div className="w-12 h-12 bg-slate-800 rounded-full mr-4 overflow-hidden border border-white/10">
-                                        <img src="https://ui-avatars.com/api/?name=Event+Organizer&background=14b8a6&color=fff" alt="Organizer" />
+                                        <img src={`https://ui-avatars.com/api/?name=${event?.organizerName || 'Organizer'}&background=10b981&color=fff`} alt="Organizer" />
                                     </div>
                                     <div>
-                                        <p className="text-white font-semibold">Event Organizer</p>
-                                        <p className="text-slate-400 text-xs uppercase tracking-tighter">Verified Host</p>
+                                        <p className="text-white font-semibold">{event?.organizerName || 'Event Organizer'}</p>
+                                        <p className="text-slate-400 text-[10px] uppercase tracking-tighter">Verified Host</p>
                                     </div>
                                 </div>
-                                <p className="text-slate-400 text-sm leading-relaxed mb-4">
-                                    Hosted by our premium partners. Click to view more events from this organizer.
-                                </p>
                                 <button className="w-full text-brand-400 text-sm font-semibold hover:text-brand-300 transition-colors flex items-center justify-center">
                                     View Profile <span className="ml-1">→</span>
                                 </button>

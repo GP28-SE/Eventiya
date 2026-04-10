@@ -29,11 +29,15 @@ public class Event {
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal price;
 
-    private Integer capacity;
-
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private EventStatus status;
+
+    @Column(nullable = false)
+    private Integer capacity;
+
+    @Column(nullable = false)
+    private Integer availableTickets;
 
     private String imageUrl;
 
@@ -54,6 +58,9 @@ public class Event {
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
+        if (this.availableTickets == null && this.capacity != null) {
+            this.availableTickets = this.capacity;
+        }
     }
 
     @PreUpdate
@@ -119,14 +126,6 @@ public class Event {
         this.price = price;
     }
 
-    public Integer getCapacity() {
-        return capacity;
-    }
-
-    public void setCapacity(Integer capacity) {
-        this.capacity = capacity;
-    }
-
     public EventStatus getStatus() {
         return status;
     }
@@ -141,6 +140,22 @@ public class Event {
 
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
+    }
+
+    public Integer getCapacity() {
+        return capacity;
+    }
+
+    public void setCapacity(Integer capacity) {
+        this.capacity = capacity;
+    }
+
+    public Integer getAvailableTickets() {
+        return availableTickets;
+    }
+
+    public void setAvailableTickets(Integer availableTickets) {
+        this.availableTickets = availableTickets;
     }
 
     public LocalDateTime getCreatedAt() {

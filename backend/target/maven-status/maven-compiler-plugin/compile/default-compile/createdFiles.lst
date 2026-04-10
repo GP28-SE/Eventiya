@@ -7,7 +7,6 @@ com\eventiya\backend\exception\EmailAlreadyExistsException.class
 com\eventiya\backend\exception\GlobalExceptionHandler.class
 com\eventiya\backend\dto\ErrorResponse.class
 com\eventiya\backend\dto\ProfileResponse.class
-com\eventiya\backend\controller\EventController.class
 com\eventiya\backend\dto\AuthResponse.class
 com\eventiya\backend\entity\Role.class
 com\eventiya\backend\security\AuthEntryPointJwt.class
