@@ -74,6 +74,12 @@ function AppRoutes() {
                     <DashboardLayout><AttendeeDashboard /></DashboardLayout>
                 </ProtectedRoute>
             } />
+
+            <Route path="/dashboard/tickets" element={
+                <ProtectedRoute allowedRoles={['ROLE_ATTENDEE', 'ROLE_ORGANIZER', 'ROLE_ADMIN']}>
+                    <DashboardLayout><AttendeeDashboard /></DashboardLayout>
+                </ProtectedRoute>
+            } />
             
             <Route path="/dashboard/organizer" element={
                 <ProtectedRoute allowedRoles={['ROLE_ORGANIZER', 'ROLE_ADMIN']}>
