@@ -96,6 +96,8 @@ public class EventService {
         dto.setPrice(event.getPrice());
         dto.setStatus(event.getStatus());
         dto.setImageUrl(event.getImageUrl());
+        dto.setCapacity(event.getCapacity());
+        dto.setAvailableTickets(event.getAvailableTickets());
         
         if (event.getOrganizer() != null) {
             dto.setOrganizerId(event.getOrganizer().getId());

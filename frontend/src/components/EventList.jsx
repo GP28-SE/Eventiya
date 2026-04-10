@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Loader2, ChevronLeft, ChevronRight, SearchOff } from 'lucide-react';
+import { Loader2, ChevronLeft, ChevronRight, SearchX } from 'lucide-react';
 import eventService from '../api/eventService';
 import EventCard from './EventCard';
 
@@ -61,7 +61,7 @@ const EventList = () => {
         return (
             <div className="flex flex-col items-center justify-center py-32 text-center">
                 <div className="w-20 h-20 rounded-full bg-white/5 flex items-center justify-center mb-6">
-                    <SearchOff className="text-slate-500 w-10 h-10" />
+                    <SearchX className="text-slate-500 w-10 h-10" />
                 </div>
                 <h3 className="text-2xl font-bold text-white mb-2">No upcoming events</h3>
                 <p className="text-slate-400 max-w-sm">

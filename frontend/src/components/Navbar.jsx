@@ -80,7 +80,7 @@ export default function Navbar() {
                                 </Link>
                                 <Link
                                     to="/register"
-                                    className="bg-brand-500 text-white hover:bg-brand-400 px-5 py-2.5 rounded-xl text-sm font-medium transition-all flex items-center gap-2 shadow-[0_0_15px_rgba(20,184,166,0.2)] hover:shadow-[0_0_25px_rgba(20,184,166,0.4)] hover:-translate-y-0.5"
+                                    className="bg-brand-500 text-white hover:bg-brand-400 px-5 py-2.5 rounded-xl text-sm font-medium transition-all flex items-center gap-2 shadow-[0_0_15px_rgba(16,185,129,0.2)] hover:shadow-[0_0_25px_rgba(16,185,129,0.4)] hover:-translate-y-0.5"
                                 >
                                     Get Started
                                 </Link>

@@ -13,6 +13,8 @@ public class EventDTO {
     private BigDecimal price;
     private EventStatus status;
     private String imageUrl;
+    private Integer capacity;
+    private Integer availableTickets;
     private Long organizerId;
     private String organizerName;
 
@@ -82,6 +84,22 @@ public class EventDTO {
 
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
+    }
+
+    public Integer getCapacity() {
+        return capacity;
+    }
+
+    public void setCapacity(Integer capacity) {
+        this.capacity = capacity;
+    }
+
+    public Integer getAvailableTickets() {
+        return availableTickets;
+    }
+
+    public void setAvailableTickets(Integer availableTickets) {
+        this.availableTickets = availableTickets;
     }
 
     public Long getOrganizerId() {

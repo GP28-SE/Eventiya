@@ -31,6 +31,12 @@ public class Event {
     @Column(nullable = false)
     private EventStatus status;
 
+    @Column(nullable = false)
+    private Integer capacity;
+
+    @Column(nullable = false)
+    private Integer availableTickets;
+
     private String imageUrl;
 
     @Column(updatable = false)
@@ -117,6 +123,22 @@ public class Event {
 
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
+    }
+
+    public Integer getCapacity() {
+        return capacity;
+    }
+
+    public void setCapacity(Integer capacity) {
+        this.capacity = capacity;
+    }
+
+    public Integer getAvailableTickets() {
+        return availableTickets;
+    }
+
+    public void setAvailableTickets(Integer availableTickets) {
+        this.availableTickets = availableTickets;
     }
 
     public LocalDateTime getCreatedAt() {
