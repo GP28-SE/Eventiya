@@ -1,24 +1,20 @@
-import axios from 'axios';
+import apiClient from './apiClient';
 
-const API_URL = 'http://localhost:8080/api/bookings';
+const bookingService = {
+    createBooking: async (eventId, ticketCount) => {
+        const response = await apiClient.post('/bookings', { eventId, ticketCount });
+        return response.data;
+    },
 
-const createBooking = async (eventId, ticketCount) => {
-    const response = await axios.post(API_URL, { eventId, ticketCount });
-    return response.data;
+    getMyBookings: async () => {
+        const response = await apiClient.get('/bookings/my-bookings');
+        return response.data;
+    },
+
+    getBookingById: async (id) => {
+        const response = await apiClient.get(`/bookings/${id}`);
+        return response.data;
+    }
 };
 
-const getMyBookings = async () => {
-    const response = await axios.get(`${API_URL}/my-bookings`);
-    return response.data;
-};
-
-const getBookingById = async (id) => {
-    const response = await axios.get(`${API_URL}/${id}`);
-    return response.data;
-};
-
-export default {
-    createBooking,
-    getMyBookings,
-    getBookingById
-};
+export default bookingService;
