@@ -1,82 +1,57 @@
 package com.eventiya.backend.controller;
 
+import com.eventiya.backend.dto.EventDTO;
 import com.eventiya.backend.dto.EventRequest;
-import com.eventiya.backend.entity.Event;
 import com.eventiya.backend.service.EventService;
-import com.eventiya.backend.service.FileStorageService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
-
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/events")
+@CrossOrigin(origins = "*")
 public class EventController {
 
-    private final EventService eventService;
+    @Autowired
+    private EventService eventService;
 
-    public EventController(EventService eventService) {
-        this.eventService = eventService;
-    }
-
-    @PostMapping
-    @PreAuthorize("hasRole('ORGANIZER')")
-    public ResponseEntity<Event> createEvent(@Valid @RequestBody EventRequest request, Authentication authentication) {
-        // authentication.getName() retrieves the username of the currently logged-in user
-        Event createdEvent = eventService.createEvent(request, authentication.getName());
-
-        return new ResponseEntity<>(createdEvent, HttpStatus.CREATED);
-    }
-
-    @GetMapping("/search")
-    public ResponseEntity<List<Event>> searchEvents(
-            @RequestParam(required = false) String title,
-            @RequestParam(required = false) String category,
-            @RequestParam(required = false) @org.springframework.format.annotation.DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE_TIME) java.time.LocalDateTime startDate,
-            @RequestParam(required = false) @org.springframework.format.annotation.DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE_TIME) java.time.LocalDateTime endDate) {
-
-        List<Event> events;
-
-        if (startDate != null && endDate != null) {
-            events = eventService.filterEventsByDateRange(startDate, endDate);
-        }
-
-        else if (title != null && !title.isEmpty()) {
-            events = eventService.searchEventsByTitle(title);
-        }
-
-        else if (category != null && !category.isEmpty()) {
-            events = eventService.filterEventsByCategory(category);
-        }
-
-        else {
-            events = eventService.getAllEvents();
-        }
-
+    // 1. Get All Events (paginated)
+    @GetMapping("/")
+    public ResponseEntity<Page<EventDTO>> getAllEvents(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<EventDTO> events = eventService.getAllEvents(pageable);
         return ResponseEntity.ok(events);
     }
 
-    @Autowired
-    private FileStorageService fileStorageService;
+    // 2. Get Single Event by ID
+    @GetMapping("/{id}")
+    public ResponseEntity<EventDTO> getEventById(@PathVariable Long id) {
+        return ResponseEntity.ok(eventService.getEventById(id));
+    }
 
-    @PostMapping("/{id}/image")
-    public ResponseEntity<String> uploadImage(@PathVariable Long id, @RequestParam("file") MultipartFile file) {
+    // 3. Create Event (Organizer/Admin only)
+    @PostMapping("/create")
+    @PreAuthorize("hasRole('ORGANIZER') or hasRole('ADMIN')")
+    public ResponseEntity<?> createEvent(
+            @RequestBody @Valid EventRequest eventRequest,
+            Authentication authentication) {
         try {
-
-            String fileName = fileStorageService.saveImage(file);
-
-            eventService.updateEventImage(id, fileName);
-
-            return ResponseEntity.ok("Image uploaded successfully: " + fileName);
+            eventService.createEvent(eventRequest, authentication.getName());
+            return new ResponseEntity<>(Map.of("message", "Event created successfully"), HttpStatus.CREATED);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("message", "Error creating event: " + e.getMessage()));
         }
     }
 }
