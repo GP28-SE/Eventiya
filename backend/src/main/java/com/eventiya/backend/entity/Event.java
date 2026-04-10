@@ -24,8 +24,12 @@ public class Event {
     @Column(nullable = false)
     private String venue;
 
+    private String category;
+
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal price;
+
+    private Integer capacity;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -47,6 +51,10 @@ public class Event {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "organizer_id", nullable = false)
     private User organizer;
+
+    // Default constructor required by JPA
+    public Event() {
+    }
 
     @PrePersist
     protected void onCreate() {
@@ -101,12 +109,28 @@ public class Event {
         this.venue = venue;
     }
 
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
     public BigDecimal getPrice() {
         return price;
     }
 
     public void setPrice(BigDecimal price) {
         this.price = price;
+    }
+
+    public Integer getCapacity() {
+        return capacity;
+    }
+
+    public void setCapacity(Integer capacity) {
+        this.capacity = capacity;
     }
 
     public EventStatus getStatus() {
