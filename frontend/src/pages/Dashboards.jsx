@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { LayoutGrid, Ticket, Search, AlertCircle, Loader2 } from 'lucide-react';
 import bookingService from '../api/bookingService';
 import TicketCard from '../components/TicketCard';
+import UploadProofModal from '../components/UploadProofModal';
 
 const DashboardOverview = ({ title, description, children }) => (
     <div className="space-y-6">
@@ -20,6 +21,8 @@ export const AttendeeDashboard = () => {
     const [bookings, setBookings] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [selectedBooking, setSelectedBooking] = useState(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     useEffect(() => {
         fetchBookings();
@@ -39,8 +42,12 @@ export const AttendeeDashboard = () => {
     };
 
     const handleUploadReceipt = (booking) => {
-        // VIMUKTHI HOOK: This is where SCRUM-302 (Payment Proof) logic will be plugged in.
-        alert(`Contacting payment verification for: ${booking.referenceCode}. (Vimukthi's Task)`);
+        setSelectedBooking(booking);
+        setIsModalOpen(true);
+    };
+
+    const handleUploadSuccess = () => {
+        fetchBookings(); // Refresh the list to show updated status
     };
 
     if (loading) {
@@ -90,6 +97,13 @@ export const AttendeeDashboard = () => {
                     ))}
                 </div>
             )}
+
+            <UploadProofModal 
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                bookingId={selectedBooking?.id}
+                onSuccess={handleUploadSuccess}
+            />
         </DashboardOverview>
     );
 };

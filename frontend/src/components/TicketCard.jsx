@@ -22,8 +22,17 @@ const StatusBadge = ({ status }) => {
 };
 
 const TicketCard = ({ booking, onUploadReceipt }) => {
-    const { event, ticketCount, status, referenceCode, totalPrice } = booking;
-    const eventDate = new Date(event.eventDate);
+    const { 
+        eventTitle, 
+        eventDate: rawEventDate, 
+        eventVenue, 
+        ticketCount, 
+        status, 
+        referenceCode, 
+        totalPrice 
+    } = booking;
+    
+    const eventDate = new Date(rawEventDate);
 
     return (
         <motion.div 
@@ -42,7 +51,7 @@ const TicketCard = ({ booking, onUploadReceipt }) => {
                     </div>
 
                     <h3 className="text-lg font-bold text-white mb-3 group-hover:text-brand-400 transition-colors">
-                        {event.title}
+                        {eventTitle}
                     </h3>
 
                     <div className="space-y-2 mb-4">
@@ -52,7 +61,7 @@ const TicketCard = ({ booking, onUploadReceipt }) => {
                         </div>
                         <div className="flex items-center text-slate-400 text-sm gap-2">
                             <MapPin size={14} className="text-brand-500" />
-                            <span className="truncate">{event.venue}</span>
+                            <span className="truncate">{eventVenue}</span>
                         </div>
                     </div>
 
@@ -86,7 +95,7 @@ const TicketCard = ({ booking, onUploadReceipt }) => {
                             className="flex-1 flex items-center justify-center gap-2 py-2 text-sm font-semibold text-brand-400 bg-brand-400/10 hover:bg-brand-400/20 rounded-xl border border-brand-400/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
                         >
                             <CreditCard size={16} />
-                            Upload Proof (Vimukthi)
+                            Upload Payment Proof
                         </button>
                     ) : (
                         <button className="flex-1 flex items-center justify-center gap-2 py-2 text-sm font-semibold text-slate-400 bg-slate-800/50 rounded-xl cursor-default">
