@@ -29,8 +29,6 @@ public class Event {
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal price;
 
-    private Integer capacity;
-
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private EventStatus status;
@@ -60,6 +58,9 @@ public class Event {
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
+        if (this.availableTickets == null && this.capacity != null) {
+            this.availableTickets = this.capacity;
+        }
     }
 
     @PreUpdate
@@ -123,14 +124,6 @@ public class Event {
 
     public void setPrice(BigDecimal price) {
         this.price = price;
-    }
-
-    public Integer getCapacity() {
-        return capacity;
-    }
-
-    public void setCapacity(Integer capacity) {
-        this.capacity = capacity;
     }
 
     public EventStatus getStatus() {

@@ -24,6 +24,22 @@ public class DataSeeder implements CommandLineRunner {
     public void run(String... args) throws Exception {
         if (eventRepository.count() == 0) {
             seedEvents();
+        } else {
+            // Fix existing events that might have null capacity/availableTickets
+            eventRepository.findAll().forEach(event -> {
+                boolean updated = false;
+                if (event.getCapacity() == null) {
+                    event.setCapacity(100);
+                    updated = true;
+                }
+                if (event.getAvailableTickets() == null) {
+                    event.setAvailableTickets(event.getCapacity());
+                    updated = true;
+                }
+                if (updated) {
+                    eventRepository.save(event);
+                }
+            });
         }
     }
 

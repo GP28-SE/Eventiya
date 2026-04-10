@@ -38,6 +38,7 @@ public class EventService {
         event.setCategory(request.getCategory());
         event.setPrice(request.getPrice() != null ? BigDecimal.valueOf(request.getPrice()) : null);
         event.setCapacity(request.getCapacity());
+        event.setAvailableTickets(request.getCapacity());
         event.setOrganizer(organizer);
         event.setStatus(EventStatus.DRAFT);
 
@@ -83,7 +84,7 @@ public class EventService {
         return convertToDTO(event);
     }
 
-    public User getUserByEmail(String email) {
+    public com.eventiya.backend.entity.User getUserByEmail(String email) {
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found with email: " + email));
     }
@@ -106,6 +107,8 @@ public class EventService {
         event.setPrice(eventDTO.getPrice());
         event.setStatus(eventDTO.getStatus());
         event.setImageUrl(eventDTO.getImageUrl());
+        event.setCapacity(eventDTO.getCapacity());
+        event.setAvailableTickets(eventDTO.getAvailableTickets());
 
         Event updatedEvent = eventRepository.save(event);
         return convertToDTO(updatedEvent);
@@ -142,6 +145,8 @@ public class EventService {
         dto.setPrice(event.getPrice());
         dto.setStatus(event.getStatus());
         dto.setImageUrl(event.getImageUrl());
+        dto.setCapacity(event.getCapacity());
+        dto.setAvailableTickets(event.getAvailableTickets());
 
         if (event.getOrganizer() != null) {
             dto.setOrganizerId(event.getOrganizer().getId());
