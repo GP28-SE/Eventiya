@@ -13,19 +13,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import com.eventiya.backend.entity.Booking;
-import com.eventiya.backend.entity.BookingStatus;
-import com.eventiya.backend.repository.BookingRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
 
 @Service
 public class BookingService {
@@ -41,33 +35,31 @@ public class BookingService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private FileStorageService fileStorageService;
+
+    @Autowired
+    private AccountingService accountingService; // SCRUM-105
+
     @Transactional
     public BookingDTO createBooking(Long eventId, Integer ticketCount, String userEmail) {
         try {
             Event event = eventRepository.findById(eventId)
                     .orElseThrow(() -> new RuntimeException("Event not found"));
-            
+
             User user = userRepository.findByEmail(userEmail)
                     .orElseThrow(() -> new RuntimeException("User not found"));
 
-            if (event.getAvailableTickets() == null) {
-                throw new RuntimeException("Event ticket availability not initialized");
+            if (event.getAvailableTickets() == null || event.getAvailableTickets() < ticketCount) {
+                throw new RuntimeException("Not enough tickets available.");
             }
 
-            if (event.getAvailableTickets() < ticketCount) {
-                throw new RuntimeException("Not enough tickets available. Only " + event.getAvailableTickets() + " left.");
-            }
-
-            if (event.getPrice() == null) {
-                throw new RuntimeException("Event price not set. Cannot book tickets.");
-            }
-
-            // Deduct tickets
+            // Deduct tickets from inventory
             event.setAvailableTickets(event.getAvailableTickets() - ticketCount);
             eventRepository.save(event);
 
             Booking booking = new Booking();
-            booking.setAttendee(user);
+            booking.setUser(user);
             booking.setEvent(event);
             booking.setTicketCount(ticketCount);
             booking.setTotalPrice(event.getPrice().multiply(new BigDecimal(ticketCount)));
@@ -82,23 +74,53 @@ public class BookingService {
         }
     }
 
+    // --- SCRUM-100 & SCRUM-105: Admin Verification Logic ---
+    @Transactional
+    public void verifyPaymentStatus(Long bookingId, String action) {
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new RuntimeException("Booking not found with ID: " + bookingId));
+
+        if ("APPROVE".equalsIgnoreCase(action)) {
+            // Calculate revenue split (SCRUM-105)
+            accountingService.calculateAndSetRevenue(booking);
+
+            // Mark as PAID
+            booking.setStatus(BookingStatus.PAID);
+
+            logger.info("Booking ID {} APPROVED. Platform Fee: {}, Organizer Earning: {}",
+                    bookingId, booking.getPlatformFee(), booking.getOrganizerEarning());
+        } else if ("REJECT".equalsIgnoreCase(action)) {
+            booking.setStatus(BookingStatus.REJECTED);
+
+            // Note: In a real scenario, you might want to return tickets back to inventory here
+            logger.info("Booking ID {} REJECTED by admin.", bookingId);
+        }
+
+        bookingRepository.save(booking);
+    }
+
+    @Transactional
+    public Booking uploadPaymentProof(Long bookingId, MultipartFile file) throws IOException {
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new RuntimeException("Booking not found with id: " + bookingId));
+
+        if (booking.getStatus() != BookingStatus.PENDING) {
+            throw new RuntimeException("Upload failed: Booking is not in PENDING status.");
+        }
+
+        String fileName = fileStorageService.saveImage(file);
+        booking.setReceiptUrl(fileName);
+        booking.setStatus(BookingStatus.PENDING_VERIFICATION);
+
+        return bookingRepository.save(booking);
+    }
+
     public List<BookingDTO> getMyBookings(String userEmail) {
         User user = userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-        return bookingRepository.findByAttendee(user).stream()
+        return bookingRepository.findByUser(user).stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
-    }
-
-    public BookingDTO getBookingById(Long id, String userEmail) {
-        Booking booking = bookingRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Booking not found"));
-        
-        if (!booking.getAttendee().getEmail().equals(userEmail)) {
-            throw new RuntimeException("Unauthorized access to booking");
-        }
-        
-        return convertToDTO(booking);
     }
 
     private BookingDTO convertToDTO(Booking booking) {
@@ -114,26 +136,5 @@ public class BookingService {
         dto.setReceiptUrl(booking.getReceiptUrl());
         dto.setCreatedAt(booking.getCreatedAt());
         return dto;
-    private FileStorageService fileStorageService;
-
-    public Booking uploadPaymentProof(Long bookingId, MultipartFile file, String currentUsername) throws IOException {
-        Booking booking = bookingRepository.findById(bookingId)
-                .orElseThrow(() -> new RuntimeException("Booking not found with id: " + bookingId));
-
-        // Note: For SCRUM-302 security, checking if the current user is the booking owner would go here.
-        // if (!booking.getUser().getEmail().equals(currentUsername)) {
-        //     throw new RuntimeException("You do not have permission to upload proof for this booking");
-        // }
-
-        if (booking.getStatus() != BookingStatus.PENDING) {
-            throw new RuntimeException("Upload failed: Booking is not in PENDING status.");
-        }
-
-        String fileName = fileStorageService.saveImage(file);
-        
-        booking.setReceiptUrl(fileName);
-        booking.setStatus(BookingStatus.PENDING_VERIFICATION);
-        
-        return bookingRepository.save(booking);
     }
 }
