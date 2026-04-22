@@ -26,13 +26,11 @@ public class Booking {
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal totalPrice;
 
-    // --- SCRUM-104: Financial Fields ---
     @Column(precision = 10, scale = 2)
-    private BigDecimal platformFee; // Platform commission
+    private BigDecimal platformFee;
 
     @Column(precision = 10, scale = 2)
-    private BigDecimal organizerEarning; // Amount for Organizer
-    // ------------------------------------
+    private BigDecimal organizerEarning;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
