@@ -13,7 +13,8 @@ public class AccountingService {
     @Autowired
     private EmailService emailService;
 
-    private static final BigDecimal DEFAULT_COMMISSION_RATE = new BigDecimal("10.00");
+    @Autowired
+    private GlobalSettingService settingsService;
 
     public void processPaymentVerification(Booking booking) {
         calculateAndSetRevenue(booking);
@@ -31,11 +32,14 @@ public class AccountingService {
         );
     }
 
-    private void calculateAndSetRevenue(Booking booking) {
+    public void calculateAndSetRevenue(Booking booking) {
         BigDecimal totalPrice = booking.getTotalPrice();
 
+        String rateString = settingsService.getSettingValue("COMMISSION_RATE", "10.00");
+        BigDecimal commissionRate = new BigDecimal(rateString);
+
         BigDecimal platformFee = totalPrice
-                .multiply(DEFAULT_COMMISSION_RATE)
+                .multiply(commissionRate)
                 .divide(new BigDecimal("100"), 2, RoundingMode.HALF_UP);
 
         BigDecimal organizerEarning = totalPrice.subtract(platformFee);

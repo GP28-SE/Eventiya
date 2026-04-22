@@ -68,7 +68,8 @@ public class WebSecurityConfig {
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/test/**").permitAll()
                         .requestMatchers("/api/events/**").permitAll()
-                        .anyRequest().authenticated()); // අනිත් ඔක්කොම Request වලට Login වෙන්නම ඕනේ
+                        .requestMatchers("/api/admin/**").permitAll()
+                        .anyRequest().authenticated());
 
         http.authenticationProvider(authenticationProvider());
         http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
