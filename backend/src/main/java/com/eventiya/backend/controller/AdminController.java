@@ -8,6 +8,9 @@ import com.eventiya.backend.entity.EventStatus;
 import com.eventiya.backend.repository.EventRepository;
 import com.eventiya.backend.service.AccountingService;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
+import java.math.BigDecimal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,6 +27,26 @@ public class AdminController {
 
     @Autowired
     private EventRepository eventRepository;
+
+    @GetMapping("/financial-stats")
+    public ResponseEntity<Map<String, BigDecimal>> getFinancialStats() {
+        List<Booking> paidBookings = bookingRepository.findByStatus(BookingStatus.PAID);
+        BigDecimal totalSales = BigDecimal.ZERO;
+        BigDecimal netProfit = BigDecimal.ZERO;
+        BigDecimal organizerBalance = BigDecimal.ZERO;
+
+        for (Booking b : paidBookings) {
+            if (b.getTotalPrice() != null) totalSales = totalSales.add(b.getTotalPrice());
+            if (b.getPlatformFee() != null) netProfit = netProfit.add(b.getPlatformFee());
+            if (b.getOrganizerEarning() != null) organizerBalance = organizerBalance.add(b.getOrganizerEarning());
+        }
+
+        Map<String, BigDecimal> stats = new HashMap<>();
+        stats.put("totalSales", totalSales);
+        stats.put("netProfit", netProfit);
+        stats.put("organizerBalance", organizerBalance);
+        return ResponseEntity.ok(stats);
+    }
 
     @GetMapping("/pending-payments")
     public ResponseEntity<List<Booking>> getPendingPayments() {
