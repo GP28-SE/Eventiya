@@ -2,5 +2,7 @@ package com.eventiya.backend.entity;
 
 public enum EventStatus {
     DRAFT,
-    PUBLISHED
+    PENDING_APPROVAL,
+    APPROVED,
+    REJECTED
 }
