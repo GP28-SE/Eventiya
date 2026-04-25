@@ -99,6 +99,14 @@ public class BookingService {
         bookingRepository.save(booking);
     }
 
+    public List<BookingDTO> getMyBookings(String userEmail) {
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        return bookingRepository.findByUser(user).stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
     public BookingDTO getBookingById(Long id, String userEmail) {
         Booking booking = bookingRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Booking not found"));

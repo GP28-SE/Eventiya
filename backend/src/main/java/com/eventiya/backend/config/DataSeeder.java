@@ -63,7 +63,7 @@ public class DataSeeder implements CommandLineRunner {
         event1.setEventDate(now.plusDays(10).withHour(9).withMinute(0));
         event1.setVenue("Silicon Valley Convention Center");
         event1.setPrice(new BigDecimal("299.00"));
-        event1.setStatus(EventStatus.PUBLISHED);
+        event1.setStatus(EventStatus.APPROVED);
         event1.setCapacity(100);
         event1.setAvailableTickets(100);
         event1.setImageUrl("https://images.unsplash.com/photo-1540575861501-7ad05823c951?auto=format&fit=crop&q=80&w=1000");
@@ -75,7 +75,7 @@ public class DataSeeder implements CommandLineRunner {
         event2.setEventDate(now.plusDays(5).withHour(20).withMinute(30));
         event2.setVenue("The Blue Note Lounge");
         event2.setPrice(new BigDecimal("45.00"));
-        event2.setStatus(EventStatus.PUBLISHED);
+        event2.setStatus(EventStatus.APPROVED);
         event2.setCapacity(100);
         event2.setAvailableTickets(100);
         event2.setImageUrl("https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&q=80&w=1000");
@@ -87,7 +87,7 @@ public class DataSeeder implements CommandLineRunner {
         event3.setEventDate(now.plusDays(15).withHour(10).withMinute(0));
         event3.setVenue("Metropolitan Gallery of Art");
         event3.setPrice(new BigDecimal("15.00"));
-        event3.setStatus(EventStatus.PUBLISHED);
+        event3.setStatus(EventStatus.APPROVED);
         event3.setCapacity(100);
         event3.setAvailableTickets(100);
         event3.setImageUrl("https://images.unsplash.com/photo-1492037766660-2a56f9eb3fcb?auto=format&fit=crop&q=80&w=1000");
@@ -99,7 +99,7 @@ public class DataSeeder implements CommandLineRunner {
         event4.setEventDate(now.plusDays(20).withHour(11).withMinute(0));
         event4.setVenue("City Central Park");
         event4.setPrice(BigDecimal.ZERO);
-        event4.setStatus(EventStatus.PUBLISHED);
+        event4.setStatus(EventStatus.APPROVED);
         event4.setCapacity(100);
         event4.setAvailableTickets(100);
         event4.setImageUrl("https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&q=80&w=1000");
@@ -111,7 +111,7 @@ public class DataSeeder implements CommandLineRunner {
         event5.setEventDate(now.plusDays(2).withHour(18).withMinute(0));
         event5.setVenue("Innovation Hub Co-working");
         event5.setPrice(new BigDecimal("10.00"));
-        event5.setStatus(EventStatus.PUBLISHED);
+        event5.setStatus(EventStatus.APPROVED);
         event5.setCapacity(100);
         event5.setAvailableTickets(100);
         event5.setImageUrl("https://images.unsplash.com/photo-1559136555-9303baea8ebd?auto=format&fit=crop&q=80&w=1000");
@@ -123,7 +123,7 @@ public class DataSeeder implements CommandLineRunner {
         event6.setEventDate(now.plusDays(30).withHour(8).withMinute(0));
         event6.setVenue("Serenity Lake Resort");
         event6.setPrice(new BigDecimal("150.00"));
-        event6.setStatus(EventStatus.PUBLISHED);
+        event6.setStatus(EventStatus.APPROVED);
         event6.setCapacity(100);
         event6.setAvailableTickets(100);
         event6.setImageUrl("https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&q=80&w=1000");

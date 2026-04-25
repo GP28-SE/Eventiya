@@ -44,7 +44,7 @@ class EventServiceTest {
         Event event = new Event();
         event.setId(1L);
         event.setTitle("Test Event");
-        event.setStatus(EventStatus.PUBLISHED);
+        event.setStatus(EventStatus.APPROVED);
         event.setEventDate(LocalDateTime.now().plusDays(1));
         event.setVenue("Test Venue");
         event.setPrice(new BigDecimal("100.00"));
@@ -53,7 +53,7 @@ class EventServiceTest {
         Page<Event> eventPage = new PageImpl<>(events, pageable, events.size());
 
         when(eventRepository.findByStatusAndEventDateAfterOrderByEventDateAsc(
-                eq(EventStatus.PUBLISHED), any(LocalDateTime.class), eq(pageable)))
+                eq(EventStatus.APPROVED), any(LocalDateTime.class), eq(pageable)))
                 .thenReturn(eventPage);
 
         // Act
@@ -72,7 +72,7 @@ class EventServiceTest {
         Page<Event> emptyPage = new PageImpl<>(Collections.emptyList(), pageable, 0);
 
         when(eventRepository.findByStatusAndEventDateAfterOrderByEventDateAsc(
-                eq(EventStatus.PUBLISHED), any(LocalDateTime.class), eq(pageable)))
+                eq(EventStatus.APPROVED), any(LocalDateTime.class), eq(pageable)))
                 .thenReturn(emptyPage);
 
         // Act
