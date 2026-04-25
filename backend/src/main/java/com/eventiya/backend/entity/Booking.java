@@ -14,7 +14,7 @@ public class Booking {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
-    private User attendee;
+    private User user; // Attendee
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "event_id", nullable = false)
@@ -25,12 +25,12 @@ public class Booking {
 
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal totalPrice;
-    @JoinColumn(name = "event_id")
-    private Event event;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User user;
+    @Column(precision = 10, scale = 2)
+    private BigDecimal platformFee;
+
+    @Column(precision = 10, scale = 2)
+    private BigDecimal organizerEarning;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -39,17 +39,14 @@ public class Booking {
     @Column(unique = true)
     private String referenceCode;
 
-    private String receiptUrl;
-
-    @Column(updatable = false)
-    private LocalDateTime createdAt;
-
-    private LocalDateTime updatedAt;
     @Column(name = "receipt_url")
     private String receiptUrl;
 
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
+
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
 
     public Booking() {}
 
@@ -57,6 +54,9 @@ public class Booking {
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
+        if (this.status == null) {
+            this.status = BookingStatus.PENDING;
+        }
     }
 
     @PreUpdate
@@ -64,96 +64,37 @@ public class Booking {
         this.updatedAt = LocalDateTime.now();
     }
 
-    // Getters and Setters
+    // Standard Getters and Setters
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-        if (this.status == null) {
-            this.status = BookingStatus.PENDING;
-        }
-    }
+    public User getUser() { return user; }
+    public void setUser(User user) { this.user = user; }
 
-    public Long getId() {
-        return id;
-    }
+    public Event getEvent() { return event; }
+    public void setEvent(Event event) { this.event = event; }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    public Integer getTicketCount() { return ticketCount; }
+    public void setTicketCount(Integer ticketCount) { this.ticketCount = ticketCount; }
 
-    public User getAttendee() {
-        return attendee;
-    }
+    public BigDecimal getTotalPrice() { return totalPrice; }
+    public void setTotalPrice(BigDecimal totalPrice) { this.totalPrice = totalPrice; }
 
-    public void setAttendee(User attendee) {
-        this.attendee = attendee;
-    }
+    public BigDecimal getPlatformFee() { return platformFee; }
+    public void setPlatformFee(BigDecimal platformFee) { this.platformFee = platformFee; }
 
-    public Event getEvent() {
-        return event;
-    }
+    public BigDecimal getOrganizerEarning() { return organizerEarning; }
+    public void setOrganizerEarning(BigDecimal organizerEarning) { this.organizerEarning = organizerEarning; }
 
-    public void setEvent(Event event) {
-        this.event = event;
-    }
+    public BookingStatus getStatus() { return status; }
+    public void setStatus(BookingStatus status) { this.status = status; }
 
-    public Integer getTicketCount() {
-        return ticketCount;
-    }
+    public String getReferenceCode() { return referenceCode; }
+    public void setReferenceCode(String referenceCode) { this.referenceCode = referenceCode; }
 
-    public void setTicketCount(Integer ticketCount) {
-        this.ticketCount = ticketCount;
-    }
+    public String getReceiptUrl() { return receiptUrl; }
+    public void setReceiptUrl(String receiptUrl) { this.receiptUrl = receiptUrl; }
 
-    public BigDecimal getTotalPrice() {
-        return totalPrice;
-    }
-
-    public void setTotalPrice(BigDecimal totalPrice) {
-        this.totalPrice = totalPrice;
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public BookingStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(BookingStatus status) {
-        this.status = status;
-    }
-
-    public String getReferenceCode() {
-        return referenceCode;
-    }
-
-    public void setReferenceCode(String referenceCode) {
-        this.referenceCode = referenceCode;
-    }
-
-    public String getReceiptUrl() {
-        return receiptUrl;
-    }
-
-    public void setReceiptUrl(String receiptUrl) {
-        this.receiptUrl = receiptUrl;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
-    }
+    public LocalDateTime getCreatedAt() { return createdAt; }
+    public LocalDateTime getUpdatedAt() { return updatedAt; }
 }

@@ -40,7 +40,7 @@ public class EventService {
         event.setCapacity(request.getCapacity());
         event.setAvailableTickets(request.getCapacity());
         event.setOrganizer(organizer);
-        event.setStatus(EventStatus.DRAFT);
+        event.setStatus(EventStatus.PENDING_APPROVAL);
 
         return eventRepository.save(event);
     }
@@ -69,7 +69,7 @@ public class EventService {
     public Page<EventDTO> getUpcomingPublishedEvents(Pageable pageable) {
         LocalDateTime now = LocalDateTime.now();
         Page<Event> events = eventRepository.findByStatusAndEventDateAfterOrderByEventDateAsc(
-                EventStatus.PUBLISHED, now, pageable);
+                EventStatus.APPROVED, now, pageable);
         return events.map(this::convertToDTO);
     }
 
