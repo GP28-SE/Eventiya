@@ -11,6 +11,7 @@ import com.eventiya.backend.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -40,7 +41,7 @@ public class EventService {
         event.setCapacity(request.getCapacity());
         event.setAvailableTickets(request.getCapacity());
         event.setOrganizer(organizer);
-        event.setStatus(EventStatus.DRAFT);
+        event.setStatus(EventStatus.PENDING_APPROVAL);
 
         return eventRepository.save(event);
     }
@@ -69,7 +70,7 @@ public class EventService {
     public Page<EventDTO> getUpcomingPublishedEvents(Pageable pageable) {
         LocalDateTime now = LocalDateTime.now();
         Page<Event> events = eventRepository.findByStatusAndEventDateAfterOrderByEventDateAsc(
-                EventStatus.PUBLISHED, now, pageable);
+                EventStatus.APPROVED, now, pageable);
         return events.map(this::convertToDTO);
     }
 
@@ -97,7 +98,7 @@ public class EventService {
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         if (!event.getOrganizer().getEmail().equals(currentUsername) && currentUser.getRole() != Role.ROLE_ADMIN) {
-            throw new RuntimeException("You do not have permission to update this event");
+            throw new AccessDeniedException("You do not have permission to update this event");
         }
 
         event.setTitle(eventDTO.getTitle());
@@ -122,7 +123,7 @@ public class EventService {
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         if (!event.getOrganizer().getEmail().equals(currentUsername) && currentUser.getRole() != Role.ROLE_ADMIN) {
-            throw new RuntimeException("You do not have permission to delete this event");
+            throw new AccessDeniedException("You do not have permission to delete this event");
         }
 
         eventRepository.delete(event);

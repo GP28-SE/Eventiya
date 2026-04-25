@@ -11,6 +11,7 @@ import Profile from './pages/Profile';
 import ManageEvents from './pages/ManageEvents';
 import EventDetail from './pages/EventDetail';
 import { AttendeeDashboard, OrganizerDashboard, AdminDashboard } from './pages/Dashboards';
+import QRScanner from './pages/QRScanner';
 
 // Protected Route Wrapper
 const ProtectedRoute = ({ children, allowedRoles = [] }) => {
@@ -103,6 +104,12 @@ function AppRoutes() {
             <Route path="/manage-events" element={
                 <ProtectedRoute allowedRoles={['ROLE_ORGANIZER', 'ROLE_ADMIN']}>
                     <DashboardLayout><ManageEvents /></DashboardLayout>
+                </ProtectedRoute>
+            } />
+
+            <Route path="/scanner" element={
+                <ProtectedRoute allowedRoles={['ROLE_ORGANIZER', 'ROLE_ADMIN']}>
+                    <DashboardLayout><QRScanner /></DashboardLayout>
                 </ProtectedRoute>
             } />
 

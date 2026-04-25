@@ -21,7 +21,7 @@ export default function ManageEvents() {
         venue: '',
         price: '',
         imageUrl: '',
-        status: 'PUBLISHED'
+        status: 'PENDING_APPROVAL'
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [testResult, setTestResult] = useState(null);
@@ -228,7 +228,10 @@ export default function ManageEvents() {
                                     <div className="absolute inset-0 bg-gradient-to-t from-[#0a0f1c] to-transparent"></div>
                                     <div className="absolute top-4 left-4">
                                         <span className={`text-[10px] uppercase tracking-widest font-bold px-2 py-1 rounded-md border backdrop-blur-md
-                                            ${event.status === 'PUBLISHED' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-slate-500/10 text-slate-400 border-slate-500/20'}`}>
+                                            ${event.status === 'APPROVED' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 
+                                              event.status === 'PENDING_APPROVAL' ? 'bg-amber-500/10 text-amber-400 border-amber-500/20' : 
+                                              event.status === 'REJECTED' ? 'bg-rose-500/10 text-rose-400 border-rose-500/20' :
+                                              'bg-slate-500/10 text-slate-400 border-slate-500/20'}`}>
                                             {event.status}
                                         </span>
                                     </div>

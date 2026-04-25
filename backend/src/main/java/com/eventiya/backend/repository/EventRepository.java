@@ -22,4 +22,6 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     List<Event> findByCategoryIgnoreCase(String category);
 
     List<Event> findByEventDateBetween(LocalDateTime start, LocalDateTime end);
+
+    List<Event> findByStatus(EventStatus status);
 }

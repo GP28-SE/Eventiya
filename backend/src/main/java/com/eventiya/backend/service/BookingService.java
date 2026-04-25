@@ -38,33 +38,28 @@ public class BookingService {
     @Autowired
     private FileStorageService fileStorageService;
 
+    @Autowired
+    private AccountingService accountingService; // SCRUM-105
+
     @Transactional
     public BookingDTO createBooking(Long eventId, Integer ticketCount, String userEmail) {
         try {
             Event event = eventRepository.findById(eventId)
                     .orElseThrow(() -> new RuntimeException("Event not found"));
-            
+
             User user = userRepository.findByEmail(userEmail)
                     .orElseThrow(() -> new RuntimeException("User not found"));
 
-            if (event.getAvailableTickets() == null) {
-                throw new RuntimeException("Event ticket availability not initialized");
+            if (event.getAvailableTickets() == null || event.getAvailableTickets() < ticketCount) {
+                throw new RuntimeException("Not enough tickets available.");
             }
 
-            if (event.getAvailableTickets() < ticketCount) {
-                throw new RuntimeException("Not enough tickets available. Only " + event.getAvailableTickets() + " left.");
-            }
-
-            if (event.getPrice() == null) {
-                throw new RuntimeException("Event price not set. Cannot book tickets.");
-            }
-
-            // Deduct tickets
+            // Deduct tickets from inventory
             event.setAvailableTickets(event.getAvailableTickets() - ticketCount);
             eventRepository.save(event);
 
             Booking booking = new Booking();
-            booking.setAttendee(user);
+            booking.setUser(user);
             booking.setEvent(event);
             booking.setTicketCount(ticketCount);
             booking.setTotalPrice(event.getPrice().multiply(new BigDecimal(ticketCount)));
@@ -79,19 +74,36 @@ public class BookingService {
         }
     }
 
-    public List<BookingDTO> getMyBookings(String userEmail) {
-        User user = userRepository.findByEmail(userEmail)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-        return bookingRepository.findByAttendee(user).stream()
-                .map(this::convertToDTO)
-                .collect(Collectors.toList());
+    // --- SCRUM-100 & SCRUM-105: Admin Verification Logic ---
+    @Transactional
+    public void verifyPaymentStatus(Long bookingId, String action) {
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new RuntimeException("Booking not found with ID: " + bookingId));
+
+        if ("APPROVE".equalsIgnoreCase(action)) {
+            // Calculate revenue split (SCRUM-105)
+            accountingService.calculateAndSetRevenue(booking);
+
+            // Mark as PAID
+            booking.setStatus(BookingStatus.PAID);
+
+            logger.info("Booking ID {} APPROVED. Platform Fee: {}, Organizer Earning: {}",
+                    bookingId, booking.getPlatformFee(), booking.getOrganizerEarning());
+        } else if ("REJECT".equalsIgnoreCase(action)) {
+            booking.setStatus(BookingStatus.REJECTED);
+
+            // Note: In a real scenario, you might want to return tickets back to inventory here
+            logger.info("Booking ID {} REJECTED by admin.", bookingId);
+        }
+
+        bookingRepository.save(booking);
     }
 
     public BookingDTO getBookingById(Long id, String userEmail) {
         Booking booking = bookingRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Booking not found"));
         
-        if (!booking.getAttendee().getEmail().equals(userEmail)) {
+        if (!booking.getUser().getEmail().equals(userEmail)) {
             throw new RuntimeException("Unauthorized access to booking");
         }
         
@@ -103,7 +115,7 @@ public class BookingService {
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new RuntimeException("Booking not found with id: " + bookingId));
 
-        if (!booking.getAttendee().getEmail().equals(currentUsername)) {
+        if (!booking.getUser().getEmail().equals(currentUsername)) {
             throw new RuntimeException("You do not have permission to upload proof for this booking");
         }
 
@@ -117,6 +129,34 @@ public class BookingService {
         booking.setStatus(BookingStatus.PENDING_VERIFICATION);
         
         Booking updatedBooking = bookingRepository.save(booking);
+        return convertToDTO(updatedBooking);
+    }
+
+    @Transactional
+    public BookingDTO validateTicket(Long bookingId, String userEmail, Long eventId) {
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new RuntimeException("Booking not found"));
+
+        if (!booking.getUser().getEmail().equals(userEmail)) {
+            throw new RuntimeException("Invalid ticket ownership");
+        }
+        
+        if (!booking.getEvent().getId().equals(eventId)) {
+            throw new RuntimeException("Ticket is for a different event");
+        }
+
+        if (booking.getStatus() == BookingStatus.USED) {
+            throw new RuntimeException("Ticket has already been used");
+        }
+
+        if (booking.getStatus() != BookingStatus.PAID && booking.getStatus() != BookingStatus.CONFIRMED) {
+            throw new RuntimeException("Ticket is not active or paid");
+        }
+
+        booking.setStatus(BookingStatus.USED);
+        Booking updatedBooking = bookingRepository.save(booking);
+        
+        logger.info("Ticket validated and used for booking ID: {}", bookingId);
         return convertToDTO(updatedBooking);
     }
 

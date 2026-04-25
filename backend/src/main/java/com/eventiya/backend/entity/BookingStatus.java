@@ -5,6 +5,7 @@ public enum BookingStatus {
     PENDING_VERIFICATION,   // Proof uploaded (waiting for Admin to approve)
     PAID,                   // Admin approved (QR code generated)
     CONFIRMED,              // Same as PAID or confirmed by admin
+    REJECTED,               // Admin rejected the payment slip
     CANCELLED,              // Timeout or manual cancellation
     USED                    // Ticket scanned at venue
 }
