@@ -25,12 +25,6 @@ public class Booking {
 
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal totalPrice;
-    @JoinColumn(name = "event_id")
-    private Event event;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User user;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -39,17 +33,14 @@ public class Booking {
     @Column(unique = true)
     private String referenceCode;
 
-    private String receiptUrl;
-
-    @Column(updatable = false)
-    private LocalDateTime createdAt;
-
-    private LocalDateTime updatedAt;
     @Column(name = "receipt_url")
     private String receiptUrl;
 
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
+
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
 
     public Booking() {}
 
@@ -57,6 +48,9 @@ public class Booking {
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
+        if (this.status == null) {
+            this.status = BookingStatus.PENDING;
+        }
     }
 
     @PreUpdate
@@ -65,11 +59,6 @@ public class Booking {
     }
 
     // Getters and Setters
-
-        if (this.status == null) {
-            this.status = BookingStatus.PENDING;
-        }
-    }
 
     public Long getId() {
         return id;
@@ -109,12 +98,6 @@ public class Booking {
 
     public void setTotalPrice(BigDecimal totalPrice) {
         this.totalPrice = totalPrice;
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
     }
 
     public BookingStatus getStatus() {

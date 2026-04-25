@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Empathy Map – Eventiya</title>
+  <meta name="description" content="Empathy Map quadrant diagram for Eventiya – Says, Thinks, Does, Feels." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #0a0b0f;
+      --surface:   #13151c;
+      --border:    rgba(255,255,255,0.07);
+
+      --says-hue:  198;
+      --thinks-hue:270;
+      --does-hue:  145;
+      --feels-hue:  18;
+
+      --says-c:    hsl(var(--says-hue),  80%, 58%);
+      --thinks-c:  hsl(var(--thinks-hue),70%, 65%);
+      --does-c:    hsl(var(--does-hue),  65%, 52%);
+      --feels-c:   hsl(var(--feels-hue), 85%, 62%);
+
+      --radius:    20px;
+      --gap:       2px;
+    }
+
+    body {
+      background: var(--bg);
+      color: #e8eaf0;
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 24px 60px;
+    }
+
+    /* ── Header ─────────────────────────────────────────── */
+    header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+    header .label {
+      font-family: 'Outfit', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.35);
+      margin-bottom: 12px;
+    }
+    header h1 {
+      font-family: 'Outfit', sans-serif;
+      font-size: clamp(28px, 5vw, 48px);
+      font-weight: 800;
+      letter-spacing: -1px;
+      background: linear-gradient(135deg, #fff 30%, rgba(255,255,255,0.5));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1.1;
+    }
+    header p {
+      margin-top: 10px;
+      font-size: 14px;
+      color: rgba(255,255,255,0.4);
+      font-weight: 400;
+    }
+
+    /* ── Canvas wrapper ──────────────────────────────────── */
+    .canvas-wrap {
+      position: relative;
+      width: min(960px, 100%);
+    }
+
+    /* ── Grid ────────────────────────────────────────────── */
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: 1fr 1fr;
+      gap: var(--gap);
+      border-radius: var(--radius);
+      overflow: hidden;
+      background: var(--border);
+      box-shadow:
+        0 0 0 1px rgba(255,255,255,0.05),
+        0 30px 80px rgba(0,0,0,0.6),
+        0 0 120px rgba(100,120,255,0.04);
+      aspect-ratio: 1 / 1;
+    }
+
+    /* ── Quadrant ─────────────────────────────────────────── */
+    .quadrant {
+      position: relative;
+      background: var(--surface);
+      padding: 32px 28px 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      overflow: hidden;
+      cursor: default;
+      transition: background 0.3s ease;
+    }
+    .quadrant::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      transition: opacity 0.35s ease;
+      pointer-events: none;
+    }
+    .quadrant:hover::before { opacity: 1; }
+    .quadrant:hover { background: color-mix(in srgb, var(--surface) 94%, var(--accent) 6%); }
+
+    /* accent glow corner */
+    .quadrant::after {
+      content: '';
+      position: absolute;
+      width: 240px;
+      height: 240px;
+      border-radius: 50%;
+      background: radial-gradient(circle, var(--accent) 0%, transparent 70%);
+      opacity: 0.06;
+      pointer-events: none;
+      transition: opacity 0.35s;
+    }
+    .quadrant:hover::after { opacity: 0.14; }
+
+    /* corner positions */
+    .quadrant.says  { --accent: var(--says-c);   border-top-left-radius: var(--radius); }
+    .quadrant.says::after  { top: -80px; left: -80px; }
+
+    .quadrant.thinks { --accent: var(--thinks-c); border-top-right-radius: var(--radius); }
+    .quadrant.thinks::after { top: -80px; right: -80px; }
+
+    .quadrant.does  { --accent: var(--does-c);   border-bottom-left-radius: var(--radius); }
+    .quadrant.does::after  { bottom: -80px; left: -80px; }
+
+    .quadrant.feels { --accent: var(--feels-c);  border-bottom-right-radius: var(--radius); }
+    .quadrant.feels::after { bottom: -80px; right: -80px; }
+
+    /* ── Quadrant Header ─────────────────────────────────── */
+    .q-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      position: relative;
+      z-index: 1;
+    }
+    .q-icon {
+      width: 38px; height: 38px;
+      border-radius: 10px;
+      background: color-mix(in srgb, var(--accent) 18%, transparent);
+      border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
+      display: grid;
+      place-items: center;
+      font-size: 18px;
+      flex-shrink: 0;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .quadrant:hover .q-icon {
+      transform: scale(1.1) rotate(-4deg);
+      box-shadow: 0 0 16px color-mix(in srgb, var(--accent) 50%, transparent);
+    }
+    .q-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--accent);
+      letter-spacing: -0.3px;
+    }
+    .q-subtitle {
+      font-size: 11px;
+      color: rgba(255,255,255,0.3);
+      font-weight: 400;
+      letter-spacing: 0.5px;
+      margin-top: 1px;
+    }
+
+    /* ── Divider ─────────────────────────────────────────── */
+    .q-divider {
+      height: 1px;
+      background: linear-gradient(90deg, color-mix(in srgb, var(--accent) 40%, transparent), transparent);
+      position: relative;
+      z-index: 1;
+      flex-shrink: 0;
+    }
+
+    /* ── Items ───────────────────────────────────────────── */
+    .q-items {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      position: relative;
+      z-index: 1;
+      flex: 1;
+    }
+    .q-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 13px;
+      line-height: 1.55;
+      color: rgba(255,255,255,0.72);
+      padding: 8px 10px;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.025);
+      border: 1px solid rgba(255,255,255,0.05);
+      transition: background 0.25s, border-color 0.25s, transform 0.25s;
+    }
+    .quadrant:hover .q-item:hover {
+      background: color-mix(in srgb, var(--accent) 12%, transparent);
+      border-color: color-mix(in srgb, var(--accent) 30%, transparent);
+      transform: translateX(3px);
+      color: #fff;
+    }
+    .q-item-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      margin-top: 6px;
+      flex-shrink: 0;
+      opacity: 0.7;
+    }
+
+    /* ── Centre badge ────────────────────────────────────── */
+    .centre-badge {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 96px; height: 96px;
+      z-index: 10;
+      pointer-events: none;
+    }
+    .centre-badge-inner {
+      width: 100%; height: 100%;
+      border-radius: 50%;
+      background: var(--bg);
+      border: 2px solid rgba(255,255,255,0.08);
+      box-shadow:
+        0 0 0 6px var(--bg),
+        0 0 36px rgba(0,0,0,0.8),
+        0 0 60px rgba(100,160,255,0.08);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+    }
+    .centre-badge-emoji { font-size: 26px; line-height: 1; }
+    .centre-badge-text {
+      font-family: 'Outfit', sans-serif;
+      font-size: 8px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.3);
+    }
+
+    /* ── Legend ──────────────────────────────────────────── */
+    .legend {
+      display: flex;
+      gap: 24px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 28px;
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: rgba(255,255,255,0.45);
+    }
+    .legend-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    /* ── Footer ──────────────────────────────────────────── */
+    footer {
+      margin-top: 36px;
+      font-size: 11px;
+      color: rgba(255,255,255,0.2);
+      letter-spacing: 0.5px;
+      text-align: center;
+    }
+
+    /* ── Responsive ──────────────────────────────────────── */
+    @media (max-width: 600px) {
+      .grid {
+        grid-template-columns: 1fr;
+        grid-template-rows: repeat(4, auto);
+        aspect-ratio: unset;
+      }
+      .quadrant { min-height: 220px; border-radius: 0 !important; }
+      .grid > .quadrant:first-child  { border-top-left-radius: var(--radius) !important; border-top-right-radius: var(--radius) !important; }
+      .grid > .quadrant:last-child   { border-bottom-left-radius: var(--radius) !important; border-bottom-right-radius: var(--radius) !important; }
+      .centre-badge { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="label">UX Artefact · Eventiya</div>
+    <h1>Empathy Map</h1>
+    <p>Understanding our users — what they say, think, do, and feel</p>
+  </header>
+
+  <div class="canvas-wrap">
+
+    <!-- ── Quadrant Grid ── -->
+    <div class="grid" role="grid" aria-label="Empathy Map">
+
+      <!-- SAYS -->
+      <div class="quadrant says" id="q-says" role="gridcell" aria-label="Says">
+        <div class="q-header">
+          <div class="q-icon" aria-hidden="true">💬</div>
+          <div>
+            <div class="q-title">Says</div>
+            <div class="q-subtitle">What the user expresses out loud</div>
+          </div>
+        </div>
+        <div class="q-divider"></div>
+        <div class="q-items">
+          <div class="q-item"><span class="q-item-dot"></span><span>"I want to find events near me easily."</span></div>
+          <div class="q-item"><span class="q-item-dot"></span><span>"Booking tickets is always so complicated."</span></div>
+          <div class="q-item"><span class="q-item-dot"></span><span>"I wish I could see all event details in one place."</span></div>
+          <div class="q-item"><span class="q-item-dot"></span><span>"I want to share events with my friends quickly."</span></div>
+          <div class="q-item"><span class="q-item-dot"></span><span>"Payment should be fast and secure."</span></div>
+        </div>
+      </div>
+
+      <!-- THINKS -->
+      <div class="quadrant thinks" id="q-thinks" role="gridcell" aria-label="Thinks">
+        <div class="q-header">
+          <div class="q-icon" aria-hidden="true">🧠</div>
+          <div>
+            <div class="q-title">Thinks</div>
+            <div class="q-subtitle">What's on the user's mind (unsaid)</div>
+          </div>
+        </div>
+        <div class="q-divider"></div>
+        <div class="q-items">
+          <div class="q-item"><span class="q-item-dot"></span><span>Will my data be safe on this platform?</span></div>
+          <div class="q-item"><span class="q-item-dot"></span><span>Am I getting the best price for this ticket?</span></div>
+          <div class="q-item"><span class="q-item-dot"></span><span>What if the event gets cancelled last minute?</span></div>
+          <div class="q-item"><span class="q-item-dot"></span><span>Is this event actually worth my time?</span></div>
+          <div class="q-item"><span class="q-item-dot"></span><span>I hope the organiser is credible and reliable.</span></div>
+        </div>
+      </div>
+
+      <!-- DOES -->
+      <div class="quadrant does" id="q-does" role="gridcell" aria-label="Does">
+        <div class="q-header">
+          <div class="q-icon" aria-hidden="true">⚡</div>
+          <div>
+            <div class="q-title">Does</div>
+            <div class="q-subtitle">Observable actions and behaviours</div>
+          </div>
+        </div>
+        <div class="q-divider"></div>
+        <div class="q-items">
+          <div class="q-item"><span class="q-item-dot"></span><span>Browses multiple platforms before deciding</span></div>
+          <div class="q-item"><span class="q-item-dot"></span><span>Reads reviews and ratings of events/organisers</span></div>
+          <div class="q-item"><span class="q-item-dot"></span><span>Screenshots event info to share with friends</span></div>
+          <div class="q-item"><span class="q-item-dot"></span><span>Abandons checkout if the process is too long</span></div>
+          <div class="q-item"><span class="q-item-dot"></span><span>Uses the calendar to avoid event clashes</span></div>
+        </div>
+      </div>
+
+      <!-- FEELS -->
+      <div class="quadrant feels" id="q-feels" role="gridcell" aria-label="Feels">
+        <div class="q-header">
+          <div class="q-icon" aria-hidden="true">❤️</div>
+          <div>
+            <div class="q-title">Feels</div>
+            <div class="q-subtitle">Emotional states and reactions</div>
+          </div>
+        </div>
+        <div class="q-divider"></div>
+        <div class="q-items">
+          <div class="q-item"><span class="q-item-dot"></span><span>Excited when discovering a relevant event</span></div>
+          <div class="q-item"><span class="q-item-dot"></span><span>Frustrated by unclear ticket pricing or hidden fees</span></div>
+          <div class="q-item"><span class="q-item-dot"></span><span>Anxious about missing out on popular events (FOMO)</span></div>
+          <div class="q-item"><span class="q-item-dot"></span><span>Relieved when booking confirmation arrives instantly</span></div>
+          <div class="q-item"><span class="q-item-dot"></span><span>Distrustful of platforms with a poor UI or slow load</span></div>
+        </div>
+      </div>
+
+    </div><!-- /grid -->
+
+    <!-- Centre Badge -->
+    <div class="centre-badge" aria-hidden="true">
+      <div class="centre-badge-inner">
+        <span class="centre-badge-emoji">🎯</span>
+        <span class="centre-badge-text">User</span>
+      </div>
+    </div>
+
+  </div><!-- /canvas-wrap -->
+
+  <!-- Legend -->
+  <div class="legend" aria-label="Legend">
+    <div class="legend-item"><span class="legend-dot" style="background:var(--says-c)"></span>Says</div>
+    <div class="legend-item"><span class="legend-dot" style="background:var(--thinks-c)"></span>Thinks</div>
+    <div class="legend-item"><span class="legend-dot" style="background:var(--does-c)"></span>Does</div>
+    <div class="legend-item"><span class="legend-dot" style="background:var(--feels-c)"></span>Feels</div>
+  </div>
+
+  <footer>Eventiya · Empathy Map · SE Sprint Documentation</footer>
+
+</body>
+</html>

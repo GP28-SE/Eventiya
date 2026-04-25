@@ -9,6 +9,8 @@ public class BookingDTO {
     private Long eventId;
     private String eventTitle;
     private String eventImageUrl;
+    private LocalDateTime eventDate;
+    private String eventVenue;
     private Integer ticketCount;
     private BigDecimal totalPrice;
     private BookingStatus status;
@@ -30,6 +32,12 @@ public class BookingDTO {
 
     public String getEventImageUrl() { return eventImageUrl; }
     public void setEventImageUrl(String eventImageUrl) { this.eventImageUrl = eventImageUrl; }
+
+    public LocalDateTime getEventDate() { return eventDate; }
+    public void setEventDate(LocalDateTime eventDate) { this.eventDate = eventDate; }
+
+    public String getEventVenue() { return eventVenue; }
+    public void setEventVenue(String eventVenue) { this.eventVenue = eventVenue; }
 
     public Integer getTicketCount() { return ticketCount; }
     public void setTicketCount(Integer ticketCount) { this.ticketCount = ticketCount; }
